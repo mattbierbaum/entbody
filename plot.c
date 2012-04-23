@@ -83,7 +83,7 @@ int *plot_render_particles(double *x, double *rad, int *type, long N, double L, 
     glEnd();
     
     glDisable(GL_POINT_SMOOTH);
-    glPointSize(1);
+    glPointSize(3);
 
     #ifdef POINTS 
     glBegin(GL_POINTS);

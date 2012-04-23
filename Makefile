@@ -8,7 +8,7 @@ OPENMP = 0
 # standard compile options for the c++ executable
 GCC = gcc
 EXE = entbody
-OBJS =  main.c
+OBJS =  main.c util.c initialize.c forces.c
 FLAGS = -O3 -Wall
 LIBFLAGS = -lm
 
@@ -39,4 +39,6 @@ all: $(EXE)
 $(EXE): $(OBJS)
 	$(GCC) $(FLAGS) $^ -o $@ $(LIBFLAGS)
 
+clean: $(EXE)
+	rm -rf $(EXE)
 

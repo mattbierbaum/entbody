@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include "util.h"
+#include "initialize.h"
+#include "forces.h"
 
 #ifdef PLOT
 #include "plot.h"
@@ -11,46 +14,7 @@
 #include <time.h>
 #endif
 
-#define pi      3.141592653589
-#define BLACK   0
-#define RED     1
-#define EPSILON DBL_EPSILON
-
-typedef unsigned long long int ullong;
-double eps = EPSILON; 
-
-//-----------------------------------------------------------
-// some defines and what not 
-//------------------------------------------------------------
-void   ran_seed(long j);
-double ran_ran2();
-ullong vseed;
-ullong vran;
-
 void simulate(int s);
-
-inline double mymod(double a, double b){
-  return a - b*(int)(a/b) + b*(a<0);
-}
-
-inline void coords_to_index(double *x, int *size, int *index, double L){   
-    index[0] = (int)(x[0]/L  * size[0]);
-    index[1] = (int)(x[1]/L  * size[1]);
-}
-
-inline int mod_rvec(int a, int b, int p, int *image){
-    *image = 1;
-    if (b==0) {if (a==0) *image=0; return 0;}
-    if (p != 0){
-        if (a>b)  return a-b-1;
-        if (a<0)  return a+b+1;
-    } else {
-        if (a>b)  return b;
-        if (a<0)  return 0;
-    }
-    *image = 0;
-    return a;
-}
 
 //===================================================
 // the main function
@@ -77,20 +41,13 @@ void simulate(int seed){
     ran_seed(seed);
 
     int    NMAX    = 50;
-    int    N       = 512*16; 
-    double radius  = 1.0; 
-    double L       = sqrt(pi*radius*radius*N); 
+    int    N       = 512*8; 
+    double L       = 0.0;
 
-    int pbc[] = {0,1};
-
-    double epsilon      = 50.0;
-    double damp_coeff   = 1.0;
-    double Tglobal      = 0.0;
-
-    double dt = 1e-1;
-    double t  = 0.0;
-    double R  = 2*radius; 
-    double R2 = R*R;
+    int pbc[]      = {1,1};
+    double dt      = 1e-1;
+    double t       = 0.0;
+    double Tglobal = 0.0;
 
     int i, j, k;
 
@@ -115,27 +72,24 @@ void simulate(int seed){
 
     #ifdef PLOT 
         int *key;
-        double kickforce = 4.0;
+        double kickforce = 10.0;
         plot_init(); 
         plot_clear_screen();
         key = plot_render_particles(x, rad, type, N, L,col);
     #endif
 
-    //-------------------------------------------------
+    //==========================================
     // initialize
-    for (i=0; i<N; i++){
-        rad[i] = radius;
-        x[2*i+0] = L*ran_ran2();
-        x[2*i+1] = L*ran_ran2();
-    
-        type[i] = BLACK;
-        if (i==0) type[i] = RED;
+    //init_brazilnuts(x, v, rad, type, &L, N);
+    init_random(x, v, rad, type, &L, N);
 
-        v[2*i+0] = 0.0;
-        v[2*i+1] = 0.0;
-    }
+    // find out what happened in initialization
+    double maxr = 0.0;
+    for (i=0; i<N; i++)
+        if (rad[i] > maxr) maxr = rad[i];
+    double R = 2*maxr;
+    double R2 = R*R;
 
-    //-------------------------------------------------------
     // make boxes for the neighborlist
     int size[2];
     int size_total = 1;
@@ -161,6 +115,7 @@ void simulate(int seed){
     clock_gettime(CLOCK_REALTIME, &start);
     #endif
 
+    double colmax = 0.0;
     for (t=0.0; t<time_end; t+=dt){
         int index[2];
         for (i=0; i<size_total; i++)
@@ -178,11 +133,10 @@ void simulate(int seed){
         int image[2];
         double dx[2];
         int goodcell, ind, n;
-        double r0, l, co, dist;
-        double vlen;
+        double dist;
 
         #ifdef OPENMP
-        #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,n,image,k,dist,r0,l,co,vlen)
+        #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,n,image,k,dist,vlen)
         #endif 
         for (i=0; i<N; i++){
             f[2*i+0] = 0.0;
@@ -218,35 +172,23 @@ void simulate(int seed){
                         }
 
                         //===============================================
-                        // force calculation - hertz
+                        // force calculation 
                         if (dist > 1e-10 && dist < R2){
-                            r0 = R; 
-                            l  = sqrt(dist);
-                            co = epsilon * (1-l/r0)*(1-l/r0) * (l<r0);
-                            for (k=0; k<2; k++){
-                                f[2*i+k] += - dx[k] * co;
-                                col[i] += co*co*dx[k]*dx[k]; 
-                            }
+                            force_hertz(dx, dist, rad[i], rad[n], type[i], type[n], &f[2*i]);
+                            col[i] += f[2*i+0]*f[2*i+0] + f[2*i+1]*f[2*i+1]; 
                         }
                     }
                 }
             } } 
 
             //====================================
-            // self-propulsion
-            vlen = v[2*i+0]*v[2*i+0] + v[2*i+1]*v[2*i+1];
-            if (vlen > 1e-6){
-                f[2*i+0] -= damp_coeff*vlen*v[2*i+0]/vlen;
-                f[2*i+1] -= damp_coeff*vlen*v[2*i+1]/vlen;
-            }
-        
-            f[2*i+0] += Tglobal*(ran_ran2()-0.5);
-            f[2*i+1] += Tglobal*(ran_ran2()-0.5);
-
-            //=====================================
-            // kick force
-            f[2*i+0] += o[2*i+0]; o[2*i+0] = 0.0;
-            f[2*i+1] += o[2*i+1]; o[2*i+1] = 0.0;
+            // global forces 
+            force_damping(&v[2*i], &f[2*i]);
+            force_thermal(Tglobal, &f[2*i]);
+            force_kick(&o[2*i], &f[2*i]);
+            //force_gravity(&f[2*i]);
+            if (col[i] > colmax) colmax = col[i];
+            o[2*i+0] = 0.0; o[2*i+1] = 0.0;
         }
         #ifdef OPENMP
         #pragma omp barrier
@@ -277,10 +219,10 @@ void simulate(int seed){
                         x[2*i+j] = mymod(x[2*i+j], L);
                 }
                 else {
-                    const double restoration = 1.0;
+                    const double restoration = 0.5;
                     if (x[2*i+j] >= L){x[2*i+j] = 2*L-x[2*i+j]; v[2*i+j] *= -restoration;}
                     if (x[2*i+j] < 0) {x[2*i+j] = -x[2*i+j];    v[2*i+j] *= -restoration;}
-                    if (x[2*i+j] >= L-eps || x[2*i+j] < 0){x[2*i+j] = mymod(x[2*i+j], L);}
+                    if (x[2*i+j] >= L-EPSILON || x[2*i+j] < 0){x[2*i+j] = mymod(x[2*i+j], L);}
                 }
             }
 
@@ -289,7 +231,7 @@ void simulate(int seed){
                 x[2*i+1] >= L || x[2*i+1] < 0.0)
                 printf("out of bounds\n");
             
-            col[i] = col[i]/3; 
+            col[i] = col[i]/3;//colmax; 
         }
         #ifdef OPENMP
         #pragma omp barrier
@@ -334,6 +276,10 @@ void simulate(int seed){
             Tglobal += 0.01;
         if (key['8'] == 1)
             Tglobal = 0.0;
+        if (key['t'] == 1)
+            dt *= 1.2;
+        if (key['y'] == 1)
+            dt /= 1.2;
         #endif
     }
     // end of the magic, cleanup
@@ -365,19 +311,4 @@ void simulate(int seed){
 
 
 
-//=================================================
-// extra stuff
-//=================================================
-void ran_seed(long j){
-  vseed = j;  vran = 4101842887655102017LL;
-  vran ^= vseed; 
-  vran ^= vran >> 21; vran ^= vran << 35; vran ^= vran >> 4;
-  vran = vran * 2685821657736338717LL;
-}
-
-double ran_ran2(){
-    vran ^= vran >> 21; vran ^= vran << 35; vran ^= vran >> 4;
-    ullong t = vran * 2685821657736338717LL;
-    return 5.42101086242752217e-20*t;
-}
 
