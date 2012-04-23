@@ -11,6 +11,17 @@ inline void force_hertz(double *dx, double dist, double radi, double radj, int t
     f[1] += -co * dx[1];
 }
 
+inline void force_morse(double *dx, double dist, double radi, double radj, int typei, int typej, double *f){
+    double e = 50.0;
+    double a = 0.2; 
+    double r0 = radi+radj;
+    double l = sqrt(dist);
+    double ex = exp(-a*(l-r0));
+    double co = 2*e*a;
+ 
+    f[0] += co * (1-ex)*ex * dx[0]/l;
+    f[1] += co * (1-ex)*ex * dx[1]/l;
+}
 
 inline void force_damping(double *v, double *f){
     double damp = 1.0;
