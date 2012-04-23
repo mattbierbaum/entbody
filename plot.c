@@ -17,9 +17,9 @@ void key_up(unsigned char key, int x, int y){
   keys[key] = 0;
 }
 
-void plot_init(){
-  plot_sizex = 680;
-  plot_sizey = 680;
+void plot_init(int size){
+  plot_sizex = size;
+  plot_sizey = size;
   win = 0;
   plot_init_opengl();
   int i;
@@ -83,7 +83,7 @@ int *plot_render_particles(double *x, double *rad, int *type, long N, double L, 
     glEnd();
     
     glDisable(GL_POINT_SMOOTH);
-    glPointSize(3);
+    glPointSize(1);
 
     #ifdef POINTS 
     glBegin(GL_POINTS);
@@ -93,8 +93,12 @@ int *plot_render_particles(double *x, double *rad, int *type, long N, double L, 
 
     int i;
     float tx, ty, cr, cg, cb, ca;
-    double c, rx;
+
+    double c;
+    #ifndef POINTS
+    double rx;
     uint secs;
+    #endif
 
     #ifdef OPENMP
     //#pragma omp parallel for private(tx,ty, c, cr, cg, cb, ca, rx, t, secs)

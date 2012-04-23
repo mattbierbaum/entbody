@@ -3,7 +3,7 @@
 
 #include <GL/freeglut.h>
 
-void plot_init();
+void plot_init(int size);
 void plot_clean();
 
 int *plot_render_particles(double *x, double *r, int *c, long N, double L, double *shade);

@@ -73,7 +73,11 @@ void simulate(int seed){
     #ifdef PLOT 
         int *key;
         double kickforce = 10.0;
-        plot_init(); 
+        #ifdef POINTS
+            plot_init((int)(0.92*sqrt(N)));
+        #else
+            plot_init(680);
+        #endif 
         plot_clear_screen();
         key = plot_render_particles(x, rad, type, N, L,col);
     #endif
@@ -136,7 +140,7 @@ void simulate(int seed){
         double dist;
 
         #ifdef OPENMP
-        #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,n,image,k,dist,vlen)
+        #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,n,image,k,dist)
         #endif 
         for (i=0; i<N; i++){
             f[2*i+0] = 0.0;
