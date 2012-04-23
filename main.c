@@ -77,11 +77,11 @@ void simulate(int seed){
     ran_seed(seed);
 
     int    NMAX    = 50;
-    int    N       = 512*16; 
+    int    N       = 512*8; 
     double radius  = 1.0; 
     double L       = sqrt(pi*radius*radius*N); 
 
-    int pbc[] = {0,1};
+    int pbc[] = {1,1};
 
     double epsilon      = 50.0;
     double damp_coeff   = 1.0;
