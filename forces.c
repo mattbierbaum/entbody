@@ -13,10 +13,11 @@ inline void force_hertz(double *dx, double dist, double radi, double radj, int t
 
 inline void force_morse(double *dx, double dist, double radi, double radj, int typei, int typej, double *f){
     double e = 830.0;
-    double a = 0.1; 
+    double a = 0.15; 
     double r0 = radi+radj;
     double rcut = 1.5*r0;
-    double fcut = 2*e*a * (1-exp(-a*(rcut-r0)))*exp(-a*(rcut-r0));
+    double fex  = exp(-a*(rcut-r0));
+    double fcut = 2*e*a * (1-fex)*fex;
 
     double l = sqrt(dist);
     double ex = exp(-a*(l-r0));
