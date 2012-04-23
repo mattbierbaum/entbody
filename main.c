@@ -41,10 +41,10 @@ void simulate(int seed){
     ran_seed(seed);
 
     int    NMAX    = 50;
-    int    N       = 512*8; 
+    int    N       = 512*16; 
     double L       = 0.0;
 
-    int pbc[]      = {1,1};
+    int pbc[]      = {1,0};
     double dt      = 1e-1;
     double t       = 0.0;
     double Tglobal = 0.0;
@@ -72,7 +72,7 @@ void simulate(int seed){
 
     #ifdef PLOT 
         int *key;
-        double kickforce = 10.0;
+        double kickforce = 1.0;
         #ifdef POINTS
             plot_init((int)(0.92*sqrt(N)));
         #else
@@ -85,13 +85,14 @@ void simulate(int seed){
     //==========================================
     // initialize
     //init_brazilnuts(x, v, rad, type, &L, N);
-    init_random(x, v, rad, type, &L, N);
+    //init_random(x, v, rad, type, &L, N);
+    init_rayleightaylor(x, v, rad, type, &L, N);
 
     // find out what happened in initialization
     double maxr = 0.0;
     for (i=0; i<N; i++)
         if (rad[i] > maxr) maxr = rad[i];
-    double R = 2*maxr;
+    double R = 1.5*2*maxr;
     double R2 = R*R;
 
     // make boxes for the neighborlist
@@ -178,7 +179,7 @@ void simulate(int seed){
                         //===============================================
                         // force calculation 
                         if (dist > 1e-10 && dist < R2){
-                            force_hertz(dx, dist, rad[i], rad[n], type[i], type[n], &f[2*i]);
+                            force_morse(dx, dist, rad[i], rad[n], type[i], type[n], &f[2*i]);
                             col[i] += f[2*i+0]*f[2*i+0] + f[2*i+1]*f[2*i+1]; 
                         }
                     }
@@ -190,7 +191,7 @@ void simulate(int seed){
             force_damping(&v[2*i], &f[2*i]);
             force_thermal(Tglobal, &f[2*i]);
             force_kick(&o[2*i], &f[2*i]);
-            //force_gravity(&f[2*i]);
+            force_gravity(&f[2*i], type[i]);
             if (col[i] > colmax) colmax = col[i];
             o[2*i+0] = 0.0; o[2*i+1] = 0.0;
         }
@@ -235,7 +236,7 @@ void simulate(int seed){
                 x[2*i+1] >= L || x[2*i+1] < 0.0)
                 printf("out of bounds\n");
             
-            col[i] = col[i]/3;//colmax; 
+            col[i] = 0.2;//col[i]/3;//colmax; 
         }
         #ifdef OPENMP
         #pragma omp barrier

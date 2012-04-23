@@ -45,3 +45,25 @@ void init_brazilnuts(double *x, double *v, double *rad, int *type, double *L, lo
      }
 }
 
+void init_rayleightaylor(double *x, double *v, double *rad, int *type, double *L, long N)
+{
+    long i;
+    double radius  = 1.0; 
+    *L = 1.5*sqrt(pi*radius*radius*N); 
+
+    double f = 0.15;
+    for (i=0; i<N; i++){
+        rad[i] = radius;
+        x[2*i+0] = (*L) - mymod((double)i, (*L)); 
+        x[2*i+1] = (*L) - (double)i/((*L));
+        if (x[2*i+1] < 0)   x[2*i+1] = 0.0;
+        if (x[2*i+1] >= *L) x[2*i+1] = *L;
+    
+        v[2*i+0] = 0.0;
+        v[2*i+1] = 0.0;
+   
+        type[i] = BLACK;
+        if (i < f*N) 
+            type[i] = RED;
+    }
+}
