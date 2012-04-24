@@ -29,7 +29,7 @@ do {                \
 
 #define FORCE_GRAVITY \
 do {                        \
-    double g = 0.1;         \
+    double g = 1.0;         \
     if (t == RED)           \
         f[2*i+1] += 0.5*g;  \
     else                    \

@@ -7,6 +7,7 @@
 #include "library/init_special.h"
 #include "library/forces_pair.h"
 #include "library/forces_global.h"
+#include "library/input_keys.h"
 
 #ifdef HEADER
 #include HEADER
@@ -269,42 +270,9 @@ void simulate(int seed){
         frames++;
 
         #ifdef PLOT
-        if (key['q'] == 1)
-            break;
-        if (key['w'] == 1){
-            for (i=0; i<N; i++){
-                if (type[i] == RED)
-                    o[2*i+1] = -kickforce;
-            }
-        }
-        if (key['s'] == 1){
-            for (i=0; i<N; i++){
-                if (type[i] == RED)
-                    o[2*i+1] = kickforce;
-            }
-        }
-        if (key['a'] == 1){
-            for (i=0; i<N; i++){
-                if (type[i] == RED)
-                    o[2*i+0] = -kickforce;
-            }
-        }
-        if (key['d'] == 1){
-            for (i=0; i<N; i++){
-                if (type[i] == RED)
-                    o[2*i+0] = kickforce;
-            }
-        }
-        if (key['9'] == 1)
-            Tglobal -= 0.01;
-        if (key['0'] == 1)
-            Tglobal += 0.01;
-        if (key['8'] == 1)
-            Tglobal = 0.0;
-        if (key['t'] == 1)
-            dt *= 1.2;
-        if (key['y'] == 1)
-            dt /= 1.2;
+        INPUT_KEYS_QUIT
+        INPUT_KEYS_TEMP
+        INPUT_KEYS_WASD
         #endif
     }
     // end of the magic, cleanup
