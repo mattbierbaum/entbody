@@ -1,7 +1,8 @@
 #define CONST_PBC               {1,0}
 #define CONST_PARTICLECOUNT     512*4
+#define CONST_KICKFORCE         10.0
 
-#define INIT_RANDOM \
+#define FUNCTION_INIT \
 do {                                \
     long i;                         \
     double radius  = 1.0;           \
@@ -17,7 +18,7 @@ do {                                \
         v[2*i+1] = 0.0;             \
         if (i==0) {                 \
             type[i] = RED;          \
-            rad[i] = 1*radius;      \
+            rad[i] = 5*radius;      \
         }                           \
      }                              \
 } while(0);
@@ -26,6 +27,6 @@ do {                                \
 #define FORCE_HERTZ_EPSILON     150.0
 #define FUNCTION_FORCE_PAIR     FORCE_HERTZ
 
-#define FORCE_DAMPING_COEFF     0.3 
+#define FORCE_DAMPING_COEFF     0.1 
 #define FUNCTION_FORCE_GLOBAL   {FORCE_DAMPING FORCE_GRAVITY FORCE_KICK}
 
