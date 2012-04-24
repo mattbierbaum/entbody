@@ -1,3 +1,6 @@
+ENTBODY = ~/Desktop/entbody
+NAME = polycrystals
+
 # change this to 1 or 0 depending if you want a pretty plot,
 # not sure what you want otherwise
 DOPLOT = 1
@@ -6,14 +9,16 @@ POINTS = 0
 OPENMP = 0
 
 # standard compile options for the c++ executable
+FULLPATH = `pwd`/$(NAME)
+
 GCC = gcc
-EXE = entbody
-OBJS =  main.c util.c initialize.c forces.c
-FLAGS = -O3 -Wall
+EXE = $(NAME) 
+OBJS =  $(ENTBODY)/main.c $(ENTBODY)/util.c 
+FLAGS = -O3 -Wall -DHEADER=\"$(FULLPATH).h\"
 LIBFLAGS = -lm
 
 ifeq ($(DOPLOT), 1)
-    OBJS += plot.c
+    OBJS += $(ENTBODY)/plot.c
     FLAGS += -DPLOT
     LIBFLAGS += -lGL -lGLU -lglut
 endif

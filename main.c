@@ -3,8 +3,16 @@
 #include <math.h>
 #include <float.h>
 #include "util.h"
-#include "initialize.h"
-#include "forces.h"
+#include "library/init_regular.h"
+#include "library/init_special.h"
+#include "library/forces_pair.h"
+#include "library/forces_global.h"
+
+#ifdef HEADER
+#include HEADER
+#else
+#include "library/defaults.h"
+#endif
 
 #ifdef PLOT
 #include "plot.h"
@@ -20,7 +28,7 @@ void simulate(int s);
 // the main function
 //===================================================
 int main(int argc, char **argv){
-    int seed_in     = 0;
+    int seed_in = 0;
 
     if (argc == 1) 
         simulate(seed_in);
@@ -40,11 +48,11 @@ int main(int argc, char **argv){
 void simulate(int seed){
     ran_seed(seed);
 
+    int    N       = PARTICLECOUNT;
     int    NMAX    = 50;
-    int    N       = 512*16; 
     double L       = 0.0;
 
-    int pbc[]      = {1,0};
+    int pbc[]      = PBC; 
     double dt      = 1e-1;
     double t       = 0.0;
     double Tglobal = 0.0;
@@ -84,15 +92,13 @@ void simulate(int seed){
 
     //==========================================
     // initialize
-    //init_brazilnuts(x, v, rad, type, &L, N);
-    //init_random(x, v, rad, type, &L, N);
-    init_rayleightaylor(x, v, rad, type, &L, N);
+    FUNCTION_INIT
 
     // find out what happened in initialization
     double maxr = 0.0;
     for (i=0; i<N; i++)
         if (rad[i] > maxr) maxr = rad[i];
-    double R = 1.5*2*maxr;
+    double R = 2*maxr;
     double R2 = R*R;
 
     // make boxes for the neighborlist
@@ -120,7 +126,6 @@ void simulate(int seed){
     clock_gettime(CLOCK_REALTIME, &start);
     #endif
 
-    double colmax = 0.0;
     for (t=0.0; t<time_end; t+=dt){
         int index[2];
         for (i=0; i<size_total; i++)
@@ -179,7 +184,8 @@ void simulate(int seed){
                         //===============================================
                         // force calculation 
                         if (dist > 1e-10 && dist < R2){
-                            force_morse(dx, dist, rad[i], rad[n], type[i], type[n], &f[2*i]);
+                            FUNCTION_FORCE_PAIR
+                            //force_morse(dx, dist, rad[i], rad[n], type[i], type[n], &f[2*i]);
                             col[i] += f[2*i+0]*f[2*i+0] + f[2*i+1]*f[2*i+1]; 
                         }
                     }
@@ -188,12 +194,10 @@ void simulate(int seed){
 
             //====================================
             // global forces 
-            force_damping(&v[2*i], &f[2*i]);
-            force_thermal(Tglobal, &f[2*i]);
-            force_kick(&o[2*i], &f[2*i]);
-            force_gravity(&f[2*i], type[i]);
-            if (col[i] > colmax) colmax = col[i];
-            o[2*i+0] = 0.0; o[2*i+1] = 0.0;
+            FUNCTION_FORCE_GLOBAL
+
+            o[2*i+0] = 0.0; 
+            o[2*i+1] = 0.0;
         }
         #ifdef OPENMP
         #pragma omp barrier

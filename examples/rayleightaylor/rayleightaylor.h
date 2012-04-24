@@ -1,0 +1,9 @@
+#define PBC                     {1,0}
+#define PARTICLECOUNT           512*4
+
+#define FUNCTION_INIT           INIT_RAYLEIGHTAYLOR
+
+#define FUNCTION_FORCE_PAIR     FORCE_MORSE
+
+#define FORCE_DAMPING_COEFF     0.1
+#define FUNCTION_FORCE_GLOBAL   {FORCE_DAMPING FORCE_GRAVITY FORCE_KICK}
