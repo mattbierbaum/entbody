@@ -1,4 +1,4 @@
-DIRS = brazilnuts polycrystals rayleightaylor
+DIRS = brazilnuts polycrystals rayleightaylor sand
 ENTBODY = ~/Desktop/entbody
 STUB = $(ENTBODY)/examples
 

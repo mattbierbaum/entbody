@@ -48,14 +48,19 @@ int main(int argc, char **argv){
 void simulate(int seed){
     ran_seed(seed);
 
-    int    N       = PARTICLECOUNT;
+    int    N       = CONST_PARTICLECOUNT;
     int    NMAX    = 50;
     double L       = 0.0;
 
-    int pbc[]      = PBC; 
+    int pbc[]      = CONST_PBC; 
     double dt      = 1e-1;
     double t       = 0.0;
     double Tglobal = 0.0;
+
+    double colfact = 3.0;
+    #ifdef CONST_COLOR_FACTOR
+    colfact = CONST_COLOR_FACTOR;
+    #endif
 
     int i, j, k;
 
@@ -81,6 +86,10 @@ void simulate(int seed){
     #ifdef PLOT 
         int *key;
         double kickforce = 1.0;
+        #ifdef CONST_KICKFORCE
+        kickforce = CONST_KICKFORCE;
+        #endif
+
         #ifdef POINTS
             plot_init((int)(0.92*sqrt(N)));
         #else
@@ -99,8 +108,8 @@ void simulate(int seed){
     for (i=0; i<N; i++)
         if (rad[i] > maxr) maxr = rad[i];
     double R = 2*maxr;
-    #ifdef CUTOFF_FACTOR
-    R *= CUTOFF_FACTOR;
+    #ifdef CONST_CUTOFF_FACTOR
+    R *= CONST_CUTOFF_FACTOR;
     #endif
     double R2 = R*R;
 
@@ -127,6 +136,10 @@ void simulate(int seed){
     #ifdef FPS
     struct timespec start;
     clock_gettime(CLOCK_REALTIME, &start);
+    #endif
+
+    #ifdef FUNCTION_OBJECTS_CREATE
+    FUNCTION_OBJECTS_CREATE
     #endif
 
     for (t=0.0; t<time_end; t+=dt){
@@ -200,7 +213,7 @@ void simulate(int seed){
             FUNCTION_FORCE_GLOBAL
 
             o[2*i+0] = 0.0; 
-            o[2*i+1] = 0.0;
+            o[2*i+1] = 0.0; 
         }
         #ifdef OPENMP
         #pragma omp barrier
@@ -243,7 +256,7 @@ void simulate(int seed){
                 x[2*i+1] >= L || x[2*i+1] < 0.0)
                 printf("out of bounds\n");
             
-            col[i] = 0.2;//col[i]/3;//colmax; 
+            col[i] = col[i]/colfact;
         }
         #ifdef OPENMP
         #pragma omp barrier
@@ -314,6 +327,10 @@ void simulate(int seed){
     free(rad);
     free(type);
     free(col);
+
+    #ifdef FUNCTION_OBJECTS_FREE
+    FUNCTION_OBJECTS_FREE
+    #endif
 
     #ifdef PLOT
     plot_clean(); 

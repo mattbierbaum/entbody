@@ -1,9 +1,10 @@
-#define PBC                     {1,0}
-#define PARTICLECOUNT           512*16
-#define CUTOFF_FACTOR           1.5
+#define CONST_PBC               {1,0}
+#define CONST_PARTICLECOUNT     512*16
+#define CONST_KICKFORCE         10.0
 
 #define FUNCTION_INIT           INIT_RAYLEIGHTAYLOR
 
+#define CONST_CUTOFF_FACTOR     1.5
 #define FUNCTION_FORCE_PAIR     FORCE_MORSE
 
 #define FORCE_DAMPING_COEFF     0.1

@@ -25,6 +25,10 @@ ifeq ($(POINTS), 1)
     FLAGS += -DPOINTS
 endif
 
+ifeq ($(SAVETEMPS), 1)
+    FLAGS += -save-temps
+endif
+
 # default super-target
 all: $(EXE)
 
