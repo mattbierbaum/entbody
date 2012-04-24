@@ -1,5 +1,6 @@
 #define PBC                     {1,0}
-#define PARTICLECOUNT           512*4
+#define PARTICLECOUNT           512*16
+#define CUTOFF_FACTOR           1.5
 
 #define FUNCTION_INIT           INIT_RAYLEIGHTAYLOR
 

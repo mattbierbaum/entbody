@@ -1,6 +1,5 @@
-ENTBODY = ~/Desktop/entbody
+# name of the executable and header file
 NAME = rayleightaylor
-FULLPATH = `pwd`/$(NAME)
 
 # change this to 1 or 0 depending if you want a pretty plot,
 # not sure what you want otherwise
@@ -10,39 +9,7 @@ POINTS = 0
 OPENMP = 0
 
 # standard compile options for the c++ executable
-GCC = gcc
-EXE = $(NAME) 
-OBJS =  $(ENTBODY)/main.c $(ENTBODY)/util.c 
-FLAGS = -O3 -Wall -DHEADER=\"$(FULLPATH).h\"
-LIBFLAGS = -lm
+ENTBODY = ~/Desktop/entbody
+FULLPATH := `pwd`/$(NAME)
 
-ifeq ($(DOPLOT), 1)
-    OBJS += $(ENTBODY)/plot.c
-    FLAGS += -DPLOT
-    LIBFLAGS += -lGL -lGLU -lglut
-endif
-
-ifeq ($(OPENMP), 1)
-    FLAGS += -fopenmp
-    FLAGS += -DOPENMP
-endif
-
-ifeq ($(FPS),1)
-    LIBFLAGS += -lrt
-    FLAGS += -DFPS
-endif
-
-ifeq ($(POINTS), 1)
-    FLAGS += -DPOINTS
-endif
-
-# default super-target
-all: $(EXE)
-
-# the standard executable
-$(EXE): $(OBJS)
-	$(GCC) $(FLAGS) $^ -o $@ $(LIBFLAGS)
-
-clean: $(EXE)
-	rm -rf $(EXE)
-
+include $(ENTBODY)/examples/common.mk

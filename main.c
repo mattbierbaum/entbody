@@ -99,6 +99,9 @@ void simulate(int seed){
     for (i=0; i<N; i++)
         if (rad[i] > maxr) maxr = rad[i];
     double R = 2*maxr;
+    #ifdef CUTOFF_FACTOR
+    R *= CUTOFF_FACTOR;
+    #endif
     double R2 = R*R;
 
     // make boxes for the neighborlist

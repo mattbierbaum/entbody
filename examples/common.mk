@@ -1,24 +1,12 @@
-ENTBODY = ~/Desktop/entbody
-NAME = rayleightaylor
-
-# change this to 1 or 0 depending if you want a pretty plot,
-# not sure what you want otherwise
-DOPLOT = 1
-FPS    = 1
-POINTS = 0
-OPENMP = 0
-
-# standard compile options for the c++ executable
-FULLPATH = `pwd`/$(NAME)
-
 GCC = gcc
 EXE = $(NAME) 
-OBJS =  $(ENTBODY)/main.c $(ENTBODY)/util.c 
-FLAGS = -O3 -Wall -DHEADER=\"$(FULLPATH).h\"
+SRC =  $(ENTBODY)/main.c $(ENTBODY)/util.c 
+HDR = $(FULLPATH).h
+FLAGS = -O3 -Wall -DHEADER=\"$(HDR)\"
 LIBFLAGS = -lm
 
 ifeq ($(DOPLOT), 1)
-    OBJS += $(ENTBODY)/plot.c
+    SRC += $(ENTBODY)/plot.c
     FLAGS += -DPLOT
     LIBFLAGS += -lGL -lGLU -lglut
 endif
@@ -40,10 +28,13 @@ endif
 # default super-target
 all: $(EXE)
 
+$(HDR): 
+
 # the standard executable
-$(EXE): $(OBJS)
+$(EXE): $(SRC) $(HDR)
 	$(GCC) $(FLAGS) $^ -o $@ $(LIBFLAGS)
 
-clean: $(EXE)
+clean: 
 	rm -rf $(EXE)
 
+.PHONY: clean
