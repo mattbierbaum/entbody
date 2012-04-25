@@ -50,7 +50,7 @@ int main(int argc, char **argv){
     #endif
     #ifdef ARGV2
     if (argc > 2)
-        ARGV2_VAR = ARGV_CONVERTER(ARGV2_TYPE)(argv[2]);
+        ARGV2_VAR = ARGV2_CONVERTER(argv[2]);
     #endif
 
     if (argc == 1) 
