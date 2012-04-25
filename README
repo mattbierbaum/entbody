@@ -11,5 +11,12 @@ with other systems (edit as necessary):
     POINTS - make the opengl display points, not fancy circles
     OPENMP - use threading through openmp
 
-simply use to compile: 
-    make
+How to build:
+    * if you would like to use plotting, install freeglut, opengl
+        sudo apt-get install freeglut3-dev
+
+    * need ENTBODY env variable set to the root directory
+        export ENTBODY=`pwd`
+
+    * make and run the examples (base program doesn't compile) 
+        cd examples; make
