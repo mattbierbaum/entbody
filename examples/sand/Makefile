@@ -10,6 +10,6 @@ OPENMP = 0
 #SAVETEMPS = 1
 
 # standard compile options for the c++ executable
-FULLPATH := `pwd`/$(NAME)
+FULLPATH := ${PWD}/$(NAME)
 
 include ${ENTBODY}/examples/common.mk

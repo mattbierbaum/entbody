@@ -2,6 +2,10 @@
 #define CONST_PARTICLECOUNT     512*4
 #define CONST_KICKFORCE         10.0
 
+#define ARGV1           FORCE_HERTZ_EPSILON 
+#define ARGV1_TYPE      double 
+#define ARGV1_DEFAULT   150.0
+
 #define FUNCTION_INIT \
 do {                                \
     long i;                         \
@@ -24,7 +28,7 @@ do {                                \
 } while(0);
 
 
-#define FORCE_HERTZ_EPSILON     150.0
+#define FORCE_HERTZ_EPSILON     ARGV1_VAR 
 #define FUNCTION_FORCE_PAIR     FORCE_HERTZ
 
 #define FORCE_DAMPING_COEFF     0.1 

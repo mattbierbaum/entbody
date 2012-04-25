@@ -3,6 +3,7 @@
 #include <math.h>
 #include <float.h>
 #include "util.h"
+#include "library/argv.h"
 #include "library/init_regular.h"
 #include "library/init_special.h"
 #include "library/forces_pair.h"
@@ -25,11 +26,32 @@
 
 void simulate(int s);
 
+#ifdef ARGV1
+#define ARGV1_VAR       ARGVNAME(var,ARGV1)
+#define ARGV1_CONVERTER ARGV_CONVERTER(ARGV1_TYPE)
+ARGV1_TYPE ARGV1_VAR = ARGV1_DEFAULT;
+#endif
+
+#ifdef ARGV2
+#define ARGV2_VAR       ARGVNAME(var,ARGV2)
+#define ARGV2_CONVERTER ARGV_CONVERTER(ARGV2_TYPE)
+ARGV2_TYPE ARGV2_VAR = ARGV2_DEFAULT;
+#endif
+
 //===================================================
 // the main function
 //===================================================
 int main(int argc, char **argv){
     int seed_in = 0;
+
+    #ifdef ARGV1
+    if (argc > 1)
+        ARGV1_VAR = ARGV1_CONVERTER(argv[1]);
+    #endif
+    #ifdef ARGV2
+    if (argc > 2)
+        ARGV2_VAR = ARGV_CONVERTER(ARGV2_TYPE)(argv[2]);
+    #endif
 
     if (argc == 1) 
         simulate(seed_in);
