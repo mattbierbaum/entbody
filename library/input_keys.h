@@ -9,8 +9,10 @@
             Tglobal -= 0.01;    \
         if (key['0'] == 1)      \
             Tglobal += 0.01;    \
-        if (key['8'] == 1)      \
-            Tglobal = 0.0;
+        if (key['8'] == 1){      \
+            Tglobal = 0.0;      \
+            printf("temp\n");\
+        }
 
 
 #define INPUT_KEYS_WASD                     \

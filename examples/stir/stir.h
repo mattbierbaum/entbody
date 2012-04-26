@@ -1,0 +1,17 @@
+#define CONST_PBC               {1,1}
+#define CONST_PARTICLECOUNT     512*4
+#define CONST_COLOR_FACTOR      50000.0
+
+#define INIT_RANDOM_FRACTION    0.95
+#define FUNCTION_INIT           {INIT_RANDOM rad[0]=2.0; L*=1.03;}
+
+#define CONST_CUTOFF_FACTOR     1.5
+#define FORCE_MORSE_EPSILON     900.0
+#define FORCE_MORSE_ALPHA       0.13
+#define FUNCTION_FORCE_PAIR     FORCE_MORSE
+
+#define CONST_KICKFORCE         80.0
+#define FORCE_DAMPING_COEFF     1.0
+#define FORCE_DAMPING_SPEED     0.0 
+#define FUNCTION_FORCE_GLOBAL   {FORCE_DAMPING FORCE_KICK}
+

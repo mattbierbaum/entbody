@@ -32,5 +32,7 @@ do {                                \
 #define FUNCTION_FORCE_PAIR     FORCE_HERTZ
 
 #define FORCE_DAMPING_COEFF     0.1 
+#define FORCE_DAMPING_SPEED     0.0
+#define FORCE_GRAVITY_G         1.0
 #define FUNCTION_FORCE_GLOBAL   {FORCE_DAMPING FORCE_GRAVITY FORCE_KICK}
 
