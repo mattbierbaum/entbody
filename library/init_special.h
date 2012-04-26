@@ -1,7 +1,7 @@
 #include <math.h>
 #include "../util.h"
 
-#define INIT_BRAZILNUTS \
+#define INIT_BRAZILNUTS             \
 do {                                \
     long i;                         \
     double radius  = 1.0;           \
@@ -24,7 +24,9 @@ do {                                \
      }                              \
 } while(0);
 
-#define INIT_RAYLEIGHTAYLOR \
+
+
+#define INIT_RAYLEIGHTAYLOR                         \
 do {                                                \
     long i;                                         \
     double radius  = 1.0;                           \
@@ -33,10 +35,10 @@ do {                                                \
     double f = 0.15;                                \
     for (i=0; i<N; i++){                            \
         rad[i] = radius;                            \
-        x[2*i+0] = L - mymod((double)i, L);         \
-        x[2*i+1] = L - (double)(i/L);               \
-        if (x[2*i+1] < 0)  x[2*i+1] = 0.0;          \
-        if (x[2*i+1] >= L) x[2*i+1] = L;            \
+        x[2*i+0] = L - mymod((double)2*i, L);       \
+        x[2*i+1] = L - (int)(4*i/L);                \
+        if (x[2*i+1] < 0)  x[2*i+1] = radius;       \
+        if (x[2*i+1] >= L) x[2*i+1] = L-radius;     \
                                                     \
         v[2*i+0] = 0.0;                             \
         v[2*i+1] = 0.0;                             \
