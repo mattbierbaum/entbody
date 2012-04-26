@@ -113,11 +113,11 @@ void simulate(int seed){
         kickforce = CONST_KICKFORCE;
         #endif
 
-        #ifdef POINTS
-            plot_init((int)(0.92*sqrt(N)));
-        #else
+        //#ifdef POINTS
+        //    plot_init((int)(0.92*sqrt(N)));
+        //#else
             plot_init(680);
-        #endif 
+        //#endif 
         plot_clear_screen();
         key = plot_render_particles(x, rad, type, N, L,col);
     #endif

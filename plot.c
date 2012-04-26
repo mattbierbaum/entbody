@@ -52,6 +52,9 @@ void plot_init_opengl(){
   glutKeyboardUpFunc(key_up);
   glViewport(0,0,plot_sizex, plot_sizey);
 
+  glEnable( GL_BLEND );
+  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
   glutMainLoopEvent();
   free(argv);
 }
@@ -83,9 +86,9 @@ int *plot_render_particles(double *x, double *rad, int *type, long N, double L, 
     glEnd();
     
     glDisable(GL_POINT_SMOOTH);
-    glPointSize(1);
 
     #ifdef POINTS 
+    glPointSize(rad[0]/L*plot_sizex);
     glBegin(GL_POINTS);
     #else
     double t=0;
@@ -123,6 +126,7 @@ int *plot_render_particles(double *x, double *rad, int *type, long N, double L, 
         }
         
         #ifdef POINTS
+        glPointSize(2*rad[i]/L * plot_sizex);
         plot_set_draw_color(cr,cg,cb,ca);
         glVertex2f(tx, ty);
         #else

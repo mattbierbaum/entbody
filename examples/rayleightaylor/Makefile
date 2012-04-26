@@ -5,7 +5,7 @@ NAME = rayleightaylor
 # not sure what you want otherwise
 DOPLOT = 1
 FPS    = 1
-POINTS = 0
+POINTS = 1
 OPENMP = 0
 
 # standard compile options for the c++ executable

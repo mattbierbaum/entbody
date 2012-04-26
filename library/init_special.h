@@ -30,9 +30,9 @@ do {                                \
 do {                                                \
     long i;                                         \
     double radius  = 1.0;                           \
-    L = 2*sqrt(pi*radius*radius*N);                 \
+    L = 1.1*sqrt(pi*radius*radius*N);                 \
                                                     \
-    double f = 0.15;                                \
+    double f = INIT_RAYLEIGHTAYLOR_FRACTION;        \
     for (i=0; i<N; i++){                            \
         rad[i] = radius;                            \
         x[2*i+0] = L - mymod((double)2*i, L);       \
