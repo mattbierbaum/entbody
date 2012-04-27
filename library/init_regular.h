@@ -5,7 +5,7 @@
 do {                                \
     long i;                         \
     float radius  = 1.0;            \
-    L = sqrt(pi*radius*radius*N);   \
+    L = INIT_RANDOM_FRACTION*sqrt(pi*radius*radius*N);   \
                                     \
     for (i=0; i<N; i++){            \
         rad[i] = radius;            \

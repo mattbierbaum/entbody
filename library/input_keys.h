@@ -14,30 +14,22 @@
             printf("temp\n");\
         }
 
-
+#define KICKFORCE 2.0
 #define INPUT_KEYS_WASD                     \
         if (key['w'] == 1){                 \
-            for (i=0; i<N; i++){            \
-                if (type[i] == RED)         \
-                    o[2*i+1] = -kickforce;  \
-            }                               \
+            if (ttype == RED)               \
+                oy = -KICKFORCE;            \
         }                                   \
         if (key['s'] == 1){                 \
-            for (i=0; i<N; i++){            \
-                if (type[i] == RED)         \
-                    o[2*i+1] = kickforce;   \
-            }                               \
+            if (ttype == RED)               \
+                oy = KICKFORCE;             \
         }                                   \
         if (key['a'] == 1){                 \
-            for (i=0; i<N; i++){            \
-                if (type[i] == RED)         \
-                    o[2*i+0] = -kickforce;  \
-            }                               \
+            if (ttype == RED)               \
+                ox = -KICKFORCE;            \
         }                                   \
         if (key['d'] == 1){                 \
-            for (i=0; i<N; i++){            \
-                if (type[i] == RED)         \
-                    o[2*i+0] = kickforce;   \
-            }                               \
+            if (ttype == RED)               \
+                ox = KICKFORCE;             \
         }                                   
  

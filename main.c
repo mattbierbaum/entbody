@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <float.h>
 
@@ -15,9 +16,8 @@
 
 #ifdef HEADER
 #include HEADER
-#else
-#include "library/defaults.h"
 #endif
+#include "library/defaults.h"
 
 #ifdef PLOT
 #include "plot.h"
@@ -71,9 +71,9 @@ int main(int argc, char **argv){
 // the timestep - can be CPU or CUDA!
 //==================================================================
 CUDA_GLOBAL
-void step(float *x, float *v, int *type, float *rad, float *col, 
-          int *cells, int *count, int *size, int size_total, 
-          long N, float L, float R, int *pbc, float dt, float colfact){
+void step(float *x, float *copyx, float *v, int *type, float *rad, float *col, 
+          int *cells, int *count, int *size, int size_total, int *key,
+          long N, float L, float R, int *pbc, float dt, float Tglobal, float colfact){
 
     #ifndef CUDA
     int i,j;
@@ -85,12 +85,10 @@ void step(float *x, float *v, int *type, float *rad, float *col,
     // reset the neighborlists
     int index[2];
     #ifndef CUDA
-    for (i=0; i<size_total*NMAX; i++){
+    for (i=0; i<size_total; i++){
     #endif
         if (i < size_total)
             count[i] = 0;
-        if (i < size_total*NMAX)
-            cells[i] = 0;
     #ifndef CUDA
     }
     #else
@@ -105,19 +103,23 @@ void step(float *x, float *v, int *type, float *rad, float *col,
         index[0] = (int)(x[2*i+0]/L  * size[0]);
         index[1] = (int)(x[2*i+1]/L  * size[1]);
         int t = index[0] + index[1]*size[0];
+        cells[NMAX*t + count[t]] = i;
+        copyx[2*i+ 0] = x[2*i+0];
+        copyx[2*i+ 1] = x[2*i+1];
+    
         #ifndef CUDA
-        count[t]++;
-        unsigned int pos = count[t];
+        count[t] = count[t]+1;
         #else
-        unsigned int pos = atomicInc(&count[t], 0xffffffff);
+        atomicInc(&count[t], 0xffffffff);
         #endif
-        cells[NMAX*t + pos] = i;
-    #ifndef CUDA
+     #ifndef CUDA
     }   
     #else
     __syncthreads();
     #endif
 
+    //==========================================
+    // this is mainly for CUDA optimization
     int tt[2];
     int tix[2];
     int image[2];
@@ -142,9 +144,6 @@ void step(float *x, float *v, int *type, float *rad, float *col,
     #ifdef OPENMP
     #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,tn,image,k,dist)
     #endif
-    float *tempx = (float*)malloc(sizeof(float)*N*2);
-    float *tempv = (float*)malloc(sizeof(float)*N*2);
- 
     for (i=0; i<N; i++){
     #endif
         tcol  = col[i]; ttype = type[i]; trad = rad[i];
@@ -155,6 +154,11 @@ void step(float *x, float *v, int *type, float *rad, float *col,
         wx = 0.0;       wy = 0.0;
         ox = 0.0;       oy = 0.0; 
  
+        #ifdef PLOT
+        INPUT_KEYS_TEMP
+        INPUT_KEYS_WASD
+        #endif
+
         index[0] = (int)(px/L * size[0]);
         index[1] = (int)(py/L * size[1]);
 
@@ -169,13 +173,15 @@ void step(float *x, float *v, int *type, float *rad, float *col,
                 ind = tix[0] + tix[1]*size[0]; 
                 for (j=0; j<count[ind]; j++){
                     tn = cells[NMAX*ind+j];
+                    float px2 = copyx[2*tn+0];
+                    float py2 = copyx[2*tn+1];
 
                     dist = 0.0;
-                    dx[0] = x[2*tn+0] - px;
+                    dx[0] = px2 - px;
                     if (image[0]) dx[0] += L*tt[0];
                     dist += dx[0]*dx[0];
                     
-                    dx[1] = x[2*tn+1] - py;
+                    dx[1] = py2 - py;
                     if (image[1]) dx[1] += L*tt[1];
                     dist += dx[1]*dx[1];
 
@@ -207,7 +213,6 @@ void step(float *x, float *v, int *type, float *rad, float *col,
         if (pbc[0] == 1){
             if (px >= L-EPSILON || px < 0)
                 px = mymod(px, L);
-
         }
         else {
             if (px >= L){px = 2*L-px; vx *= -restoration;}
@@ -227,20 +232,14 @@ void step(float *x, float *v, int *type, float *rad, float *col,
  
         tcol = tcol/colfact; 
 
-        col[i] = tcol; type[i] = ttype;
-        tempx[2*i+0] = px;  tempx[2*i+1] = py;
-        tempv[2*i+0] = vx;  tempv[2*i+1] = vy; 
+        col[i] = tcol;  type[i] = ttype;
+        x[2*i+0] = px;  x[2*i+1] = py;
+        v[2*i+0] = vx;  v[2*i+1] = vy; 
     #ifndef CUDA
     }
     #ifdef OPENMP
     #pragma omp barrier
     #endif
-    for (i=0; i<N; i++){
-        x[2*i+0] = tempx[2*i+0]; x[2*i+1] = tempx[2*i+1];
-        v[2*i+0] = tempv[2*i+0]; v[2*i+1] = tempv[2*i+1];
-    }
-    free(tempx);
-    free(tempv);
     #endif
 }
 
@@ -251,51 +250,40 @@ void step(float *x, float *v, int *type, float *rad, float *col,
 void simulate(int seed){
     ran_seed(seed);
 
-    int    N       = CONST_PARTICLECOUNT;
-    int pbc[]      = CONST_PBC; 
+    int    N      = CONST_PARTICLECOUNT;
+    int pbc[]     = CONST_PBC; 
     float L       = 0.0;
     float dt      = 1e-1;
     float t       = 0.0;
     float Tglobal = 0.0;
 
-    float colfact = 3.0;
-    #ifdef CONST_COLOR_FACTOR
-    colfact = CONST_COLOR_FACTOR;
-    #endif
+    float colfact = CONST_COLOR_FACTOR;
 
     int i;
-    int *type   = (int*)malloc(sizeof(int)*N);
-    float *rad = (float*)malloc(sizeof(float)*N); 
-    float *col = (float*)malloc(sizeof(float)*N); 
-    for (i=0; i<N; i++){ type[i] = rad[i] = 0;}
+    int mem_size_f = sizeof(float)*N;
+    int mem_size_i = sizeof(int)*N;
+    int mem_size_k = sizeof(int)*256;
 
-    float *x = (float*)malloc(sizeof(float)*2*N);
-    float *v = (float*)malloc(sizeof(float)*2*N);
-    float *f = (float*)malloc(sizeof(float)*2*N);
-    float *w = (float*)malloc(sizeof(float)*2*N);
-    float *o = (float*)malloc(sizeof(float)*2*N);
-    for (i=0; i<2*N; i++){o[i] = x[i] = v[i] = f[i] = w[i] = 0.0;}
+    int *type    =   (int*)malloc(mem_size_i);
+    float *rad   = (float*)malloc(mem_size_f);
+    float *col   = (float*)malloc(mem_size_f);
+    for (i=0; i<N; i++){ type[i] = rad[i] = col[i] = 0;}
 
-    #ifdef PLOT 
-    float time_end = 1e20;
-    #else
-    float time_end = 1e2;
-    #endif
+    float *x     = (float*)malloc(2*mem_size_f);
+    float *v     = (float*)malloc(2*mem_size_f);
+    float *copyx = (float*)malloc(2*mem_size_f);
+    for (i=0; i<2*N; i++){x[i] = v[i] = copyx[i] = 0.0;}
+
+    float time_end = CONST_TIME_END;
 
     #ifdef PLOT 
         int *key;
-        float kickforce = 1.0;
-        #ifdef CONST_KICKFORCE
-        kickforce = CONST_KICKFORCE;
-        #endif
-
-        //#ifdef POINTS
-        //    plot_init((int)(0.92*sqrt(N)));
-        //#else
-            plot_init(680);
-        //#endif 
+        plot_init(680);
         plot_clear_screen();
         key = plot_render_particles(x, rad, type, N, L,col);
+    #else
+        int *key = (int*)malloc(mem_size_k);
+        memset(key, 0, mem_size_k);
     #endif
 
     //==========================================
@@ -306,10 +294,7 @@ void simulate(int seed){
     float maxr = 0.0;
     for (i=0; i<N; i++)
         if (rad[i] > maxr) maxr = rad[i];
-    float R = 2*maxr;
-    #ifdef CONST_CUTOFF_FACTOR
-    R *= CONST_CUTOFF_FACTOR;
-    #endif
+    float R = 2*maxr*CONST_CUTOFF_FACTOR;
 
     // make boxes for the neighborlist
     int size[2];
@@ -336,27 +321,30 @@ void simulate(int seed){
     clock_gettime(CLOCK_REALTIME, &start);
     #endif
 
-    #ifdef FUNCTION_OBJECTS_CREATE
     FUNCTION_OBJECTS_CREATE
-    #endif
 
     for (t=0.0; t<time_end; t+=dt){
-        step(x, v, type, rad, col, 
-            cells, count, size, size_total, 
-            N, L, R, pbc, dt, colfact);
+        #ifndef CUDA
+        memcpy(copyx, x, 2*mem_size_f);
+        step(x, copyx, v, type, rad, col, 
+            cells, count, size, size_total, key,
+            N, L, R, pbc, dt, Tglobal, colfact);
+        #else
+        cudaMemcpy(copyx, x, 2*mem_size_f);
+        cudaMemcpy(key, cu_key, mem_size_k);
+        step<<< >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
+                    cu_cells, cu_count, cu_size, size_total, cu_key,
+                    N, L, R, cu_pbc, dt, Tglobal, colfact);
+        #endif
 
         #ifdef PLOT 
             plot_clear_screen();
             key = plot_render_particles(x, rad, type, N, L,col);
+            INPUT_KEYS_QUIT
         #endif
         frames++;
 
-        #ifdef PLOT
-        INPUT_KEYS_QUIT
-        INPUT_KEYS_TEMP
-        INPUT_KEYS_WASD
-        #endif
-    }
+   }
     // end of the magic, cleanup
     //----------------------------------------------
     #ifdef FPS
@@ -367,22 +355,20 @@ void simulate(int seed){
 
     free(cells);
     free(count);
- 
+
+    free(copyx); 
     free(x);
     free(v);
-    free(f);
-    free(w);
-    free(o);
     free(rad);
     free(type);
     free(col);
 
-    #ifdef FUNCTION_OBJECTS_FREE
     FUNCTION_OBJECTS_FREE
-    #endif
 
     #ifdef PLOT
     plot_clean(); 
+    #else
+    free(key);
     #endif
 }
 

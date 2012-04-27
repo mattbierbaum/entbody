@@ -2,6 +2,7 @@
 #define CONST_PARTICLECOUNT     512*16
 #define CONST_KICKFORCE         10.0
 
+#define INIT_RANDOM_FRACTION    1.0
 #define FUNCTION_INIT           INIT_RANDOM
 
 #define CONST_COLOR_FACTOR      20.0
