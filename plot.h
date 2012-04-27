@@ -6,7 +6,7 @@
 void plot_init(int size);
 void plot_clean();
 
-int *plot_render_particles(double *x, double *r, int *c, long N, double L, double *shade);
+int *plot_render_particles(float *x, float *r, int *c, long N, float L, float *shade);
 int plot_clear_screen();
 int plot_exit_func();
 

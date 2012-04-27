@@ -4,7 +4,7 @@
 #define INIT_BRAZILNUTS             \
 do {                                \
     long i;                         \
-    double radius  = 1.0;           \
+    float radius  = 1.0;            \
     L = sqrt(5*pi*radius*radius*N); \
                                     \
     for (i=0; i<N; i++){            \
@@ -29,13 +29,13 @@ do {                                \
 #define INIT_RAYLEIGHTAYLOR                         \
 do {                                                \
     long i;                                         \
-    double radius  = 1.0;                           \
+    float radius  = 1.0;                            \
     L = 1.5*sqrt(pi*radius*radius*N);               \
                                                     \
-    double f = INIT_RAYLEIGHTAYLOR_FRACTION;        \
+    float f = INIT_RAYLEIGHTAYLOR_FRACTION;         \
     for (i=0; i<N; i++){                            \
         rad[i] = radius;                            \
-        x[2*i+0] = L - mymod((double)2*i, L);       \
+        x[2*i+0] = L - mymod((float)2*i, L);        \
         x[2*i+1] = L - (int)(4*i/L);                \
         if (x[2*i+1] < 0)  x[2*i+1] = radius;       \
         if (x[2*i+1] >= L) x[2*i+1] = L-radius;     \

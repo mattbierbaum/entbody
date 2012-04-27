@@ -5,6 +5,13 @@ HDR = $(FULLPATH).h
 FLAGS = -O3 -Wall -DHEADER=\"$(HDR)\"
 LIBFLAGS = -lm
 
+# we want the compile line to be essentially
+# nvcc main.cu -arch sm_12 -DPLOT -lGL -lGLU -lglut
+ifeq ($(CUDA), 1)
+    FLAGS += -DCUDA -arch sm_12
+    GCC = nvcc
+endif 
+
 ifeq ($(DOPLOT), 1)
     SRC += $(ENTBODY)/plot.c
     FLAGS += -DPLOT

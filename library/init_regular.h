@@ -4,7 +4,7 @@
 #define INIT_RANDOM \
 do {                                \
     long i;                         \
-    double radius  = 1.0;           \
+    float radius  = 1.0;            \
     L = sqrt(pi*radius*radius*N);   \
                                     \
     for (i=0; i<N; i++){            \

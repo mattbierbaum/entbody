@@ -69,7 +69,7 @@ int plot_clear_screen(){
 }
 
 
-int *plot_render_particles(double *x, double *rad, int *type, long N, double L, double *shade){
+int *plot_render_particles(float *x, float *rad, int *type, long N, float L, float *shade){
     // focus on the part of scene where we draw nice
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -91,15 +91,15 @@ int *plot_render_particles(double *x, double *rad, int *type, long N, double L, 
     glPointSize(rad[0]/L*plot_sizex);
     glBegin(GL_POINTS);
     #else
-    double t=0;
+    float t=0;
     #endif
 
     int i;
     float tx, ty, cr, cg, cb, ca;
 
-    double c;
+    float c;
     #ifndef POINTS
-    double rx;
+    float rx;
     uint secs;
     #endif
 

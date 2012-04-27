@@ -3,37 +3,36 @@
 
 #define FORCE_DAMPING \
 do {                                            \
-    double speed= FORCE_DAMPING_SPEED;          \
-    double damp = FORCE_DAMPING_COEFF;          \
-    double vlen = v[2*i+0]*v[2*i+0]             \
-                + v[2*i+1]*v[2*i+1];            \
+    float speed= FORCE_DAMPING_SPEED;           \
+    float damp = FORCE_DAMPING_COEFF;           \
+    float vlen = vx*vx + vy*vy;                 \
     if (vlen > 1e-6){                           \
-        f[2*i+0] -= damp*(vlen-speed)*v[2*i+0]/vlen;    \
-        f[2*i+1] -= damp*(vlen-speed)*v[2*i+1]/vlen;    \
+        fx -= damp*(vlen-speed)*vx/vlen;        \
+        fy -= damp*(vlen-speed)*vy/vlen;        \
     }                                           \
 } while (0);
 
 
-#define FORCE_THERMAL \
+#define FORCE_THERMAL               \
 do {                                \
-    f[2*i+0] += Tglobal*(ran_ran2()-0.5); \
-    f[2*i+1] += Tglobal*(ran_ran2()-0.5); \
+    fx += Tglobal*(ran_ran2()-0.5); \
+    fy += Tglobal*(ran_ran2()-0.5); \
 } while(0);
 
 
-#define FORCE_KICK \
+#define FORCE_KICK  \
 do {                \
-    f[2*i+0] += o[2*i+0];   \
-    f[2*i+1] += o[2*i+1];   \
+    fx += ox;       \
+    fy += oy;       \
 } while(0);
 
 
-#define FORCE_GRAVITY \
-do {                        \
-    double g = FORCE_GRAVITY_G;         \
-    if (type[i] == RED)           \
-        f[2*i+1] += 0.1*g;  \
-    else                    \
-        f[2*i+1] += g;      \
+#define FORCE_GRAVITY           \
+do {                            \
+    float g = FORCE_GRAVITY_G;  \
+    if (type[i] == RED)         \
+        fy += 0.1*g;            \
+    else                        \
+        fy += g;                \
 } while(0);
     
