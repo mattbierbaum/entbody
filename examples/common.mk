@@ -2,7 +2,7 @@ GCC = gcc
 EXE = $(NAME) 
 SRC =  $(ENTBODY)/main.c $(ENTBODY)/util.c 
 HDR = $(FULLPATH).h
-FLAGS = -O3 -Wall -DHEADER=\"$(HDR)\"
+FLAGS = -O3 -DHEADER=\"$(HDR)\" 
 LIBFLAGS = -lm
 
 # we want the compile line to be essentially

@@ -4,6 +4,13 @@
 #include <math.h>
 #include <float.h>
 
+#ifdef CUDA
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
+#include <driver_types.h>
+#endif
+
 // the order here matters!
 #include "util.h"
 #include "library/argv.h"
@@ -47,6 +54,10 @@ ARGV2_TYPE ARGV2_VAR = ARGV2_DEFAULT;
 int main(int argc, char **argv){
     int seed_in = 0;
 
+    #ifdef CUDA
+    CUT_DEVICE_INIT();
+    #endif
+    
     #ifdef ARGV1
     if (argc > 1)
         ARGV1_VAR = ARGV1_CONVERTER(argv[1]);
@@ -70,7 +81,7 @@ int main(int argc, char **argv){
 //==================================================================
 // the timestep - can be CPU or CUDA!
 //==================================================================
-CUDA_GLOBAL
+
 void step(float *x, float *copyx, float *v, int *type, float *rad, float *col, 
           int *cells, int *count, int *size, int size_total, int *key,
           long N, float L, float R, int *pbc, float dt, float Tglobal, float colfact){
@@ -314,6 +325,10 @@ void simulate(int seed){
     //==========================================================
     // where the magic happens
     //==========================================================
+    #ifdef CUDA
+    CUDA_MEMORY_CREATE
+    #endif
+
     int frames = 0;
 
     #ifdef FPS
@@ -330,9 +345,9 @@ void simulate(int seed){
             cells, count, size, size_total, key,
             N, L, R, pbc, dt, Tglobal, colfact);
         #else
-        cudaMemcpy(copyx, x, 2*mem_size_f);
-        cudaMemcpy(key, cu_key, mem_size_k);
-        step<<< >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
+        cudaMemcpy(copyx, x, 2*mem_size_f, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(key, cu_key, mem_size_k, cudaMemcpyHostToDevice);
+        step<<<256, N/256 >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
                     cu_cells, cu_count, cu_size, size_total, cu_key,
                     N, L, R, cu_pbc, dt, Tglobal, colfact);
         #endif
@@ -364,6 +379,10 @@ void simulate(int seed){
     free(col);
 
     FUNCTION_OBJECTS_FREE
+
+    #ifdef CUDA
+    CUDA_MEMORY_FREE
+    #endif
 
     #ifdef PLOT
     plot_clean(); 
