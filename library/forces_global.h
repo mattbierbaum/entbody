@@ -31,8 +31,8 @@ do {                \
 #define FORCE_GRAVITY \
 do {                        \
     double g = FORCE_GRAVITY_G;         \
-    if (t == RED)           \
-        f[2*i+1] += 0.5*g;  \
+    if (type[i] == RED)           \
+        f[2*i+1] += 0.1*g;  \
     else                    \
         f[2*i+1] += g;      \
 } while(0);

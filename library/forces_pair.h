@@ -43,7 +43,7 @@ do {                                        \
     double l = sqrt(dist);                  \
     double ex = exp(-a*(l-r0));             \
     double co = (2*e*a * (1-ex)*ex-fcut)    \
-  *(l<rcut)*(type[i]==type[n]?0.1:1.0);     \
+  *(l<rcut)*(type[i]==type[n]?FORCE_MORSE_RELATIVE:1.0);     \
                                             \
     f[2*i+0] += co * dx[0]/l;               \
     f[2*i+1] += co * dx[1]/l;               \

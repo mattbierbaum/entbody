@@ -30,7 +30,7 @@ do {                                \
 do {                                                \
     long i;                                         \
     double radius  = 1.0;                           \
-    L = 1.1*sqrt(pi*radius*radius*N);                 \
+    L = 1.5*sqrt(pi*radius*radius*N);               \
                                                     \
     double f = INIT_RAYLEIGHTAYLOR_FRACTION;        \
     for (i=0; i<N; i++){                            \
