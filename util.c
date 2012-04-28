@@ -29,6 +29,7 @@ inline void coords_to_index(float *x, int *size, int *index, float L){
     index[1] = (int)(x[1]/L  * size[1]);
 }
 
+#ifndef CUDA
 inline int mod_rvec(int a, int b, int p, int *image){
     *image = 1;
     if (b==0) {if (a==0) *image=0; return 0;}
@@ -50,3 +51,4 @@ inline int mod_rvec(int a, int b, int p, int *image){
 inline float mymod(float a, float b){
   return a - b*(int)(a/b) + b*(a<0);
 }
+#endif

@@ -50,7 +50,9 @@
     float *cu_x    = NULL;                                      \
     float *cu_copyx    = NULL;                                      \
     float *cu_v    = NULL;                                      \
+    int *cu_pbc    = NULL;                                      \
                                                                 \
+    cudaMalloc((void**) &cu_pbc,   2*sizeof(int));  \
     cudaMalloc((void**) &cu_count, mem_cell);                   \
     cudaMalloc((void**) &cu_cells, mem_cell2);                  \
     cudaMalloc((void**) &cu_size,  mem_size2);                  \
@@ -70,7 +72,7 @@
     cudaMemcpy(cu_col,   col,   fmem_size, cudaMemcpyHostToDevice);\
     cudaMemcpy(cu_x,     x,     fmem_siz2, cudaMemcpyHostToDevice);\
     cudaMemcpy(cu_v,     v,     fmem_siz2, cudaMemcpyHostToDevice);\
-                                                                \
+    cudaMemcpy(cu_pbc, pbc,   2*sizeof(int), cudaMemcpyHostToDevice);\
     cudaMemset(cu_count, 0, mem_cell);                          \
     cudaMemset(cu_cells, 0, mem_cell2);                         \
     ERROR_CHECK                                                 
@@ -87,6 +89,27 @@
     cudaFree(cu_v);\
     cudaFree(cu_copyx);\
     ERROR_CHECK
+
+
+#define CUDA_DEVICE_FUNCS \
+__device__ int mod_rvec(int a, int b, int p, int *image){\
+    *image = 1;\
+    if (b==0) {if (a==0) *image=0; return 0;}\
+    if (p != 0){\
+        if (a>b)  return a-b-1;\
+        if (a<0)  return a+b+1;\
+    } else {\
+        if (a>b)  return b;\
+        if (a<0)  return 0;\
+    }\
+    *image = 0;\
+    return a;\
+}\
+__device__ float mymod(float a, float b){\
+  return a - b*(int)(a/b) + b*(a<0);\
+}
+
+
 
 #  define CUDA_SAFE_CALL( call) {                                            \
     cudaError err = call;                                                    \

@@ -11,7 +11,6 @@
             Tglobal += 0.01;    \
         if (key['8'] == 1){      \
             Tglobal = 0.0;      \
-            printf("temp\n");\
         }
 
 #define KICKFORCE 2.0

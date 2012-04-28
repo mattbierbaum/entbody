@@ -1,6 +1,6 @@
 GCC = gcc
 EXE = $(NAME) 
-SRC =  $(ENTBODY)/main.c $(ENTBODY)/util.c 
+SRC = 
 HDR = $(FULLPATH).h
 FLAGS = -O3 -DHEADER=\"$(HDR)\" 
 LIBFLAGS = -lm
@@ -10,7 +10,12 @@ LIBFLAGS = -lm
 ifeq ($(CUDA), 1)
     FLAGS += -DCUDA -arch sm_12
     GCC = nvcc
+    SRC += $(ENTBODY)/main.cu
+else
+    SRC += $(ENTBODY)/main.c
 endif 
+SRC += $(ENTBODY)/util.c 
+
 
 ifeq ($(DOPLOT), 1)
     SRC += $(ENTBODY)/plot.c
@@ -42,7 +47,7 @@ all: $(EXE)
 $(HDR): 
 
 # the standard executable
-$(EXE): $(SRC) $(HDR)
+$(EXE): $(SRC) 
 	$(GCC) $(FLAGS) $^ -o $@ $(LIBFLAGS)
 
 clean: 
