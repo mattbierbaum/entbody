@@ -144,7 +144,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     float px, py;
     float vx, vy;
     float fx, fy;
-    float wx, wy;
+    //float wx, wy;
     float ox, oy;
  
     int ttype;
@@ -165,7 +165,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         vx = v[2*i+0];  vy = v[2*i+1]; 
 
         fx = 0.0;       fy = 0.0;
-        wx = 0.0;       wy = 0.0;
+        //wx = 0.0;       wy = 0.0;
         ox = 0.0;       oy = 0.0; 
  
         #ifdef PLOT
@@ -348,8 +348,7 @@ void simulate(int seed){
             cells, count, size, size_total, key,
             N, L, R, pbc, dt, Tglobal, colfact);
         #else
-        cudaMemcpy(copyx, x, 2*mem_size_f, cudaMemcpyDeviceToDevice);
-        cudaMemcpy(key, cu_key, mem_size_k, cudaMemcpyHostToDevice);
+        cudaMemcpy(cu_key, key, mem_size_k, cudaMemcpyHostToDevice);
         step<<<256, N/256 >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
                     cu_cells, cu_count, cu_size, size_total, cu_key,
                     N, L, R, cu_pbc, dt, Tglobal, colfact);
