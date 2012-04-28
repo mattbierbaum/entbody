@@ -341,6 +341,7 @@ void simulate(int seed){
 
     FUNCTION_OBJECTS_CREATE
 
+    const int blocks = 512;
     for (t=0.0; t<time_end; t+=dt){
         #ifndef CUDA
         memcpy(copyx, x, 2*mem_size_f);
@@ -349,7 +350,7 @@ void simulate(int seed){
             N, L, R, pbc, dt, Tglobal, colfact);
         #else
         cudaMemcpy(cu_key, key, mem_size_k, cudaMemcpyHostToDevice);
-        step<<<256, N/256 >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
+        step<<<blocks, N/blocks >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
                     cu_cells, cu_count, cu_size, size_total, cu_key,
                     N, L, R, cu_pbc, dt, Tglobal, colfact);
         ERROR_CHECK

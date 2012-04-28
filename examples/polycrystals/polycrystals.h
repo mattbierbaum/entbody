@@ -1,5 +1,5 @@
 #define CONST_PBC               {1,1}
-#define CONST_PARTICLECOUNT     512*256
+#define CONST_PARTICLECOUNT     512*512
 #define CONST_KICKFORCE         10.0f
 #define CONST_TIME_END          1.0f
 
