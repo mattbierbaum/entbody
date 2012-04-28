@@ -1,6 +1,6 @@
 GCC = gcc
 EXE = $(NAME) 
-SRC = 
+SRC = $(ENTBODY)/main.c $(ENTBODY)/util.c 
 HDR = $(FULLPATH).h
 FLAGS = -O3 -DHEADER=\"$(HDR)\" 
 LIBFLAGS = -lm
@@ -8,14 +8,11 @@ LIBFLAGS = -lm
 # we want the compile line to be essentially
 # nvcc main.cu -arch sm_12 -DPLOT -lGL -lGLU -lglut
 ifeq ($(CUDA), 1)
-    FLAGS += -DCUDA -arch sm_12
+    FLAGS += -x cu -DCUDA -arch sm_12
     GCC = nvcc
-    SRC += $(ENTBODY)/main.cu
 else
-    SRC += $(ENTBODY)/main.c
+    SRC += $(HDR)
 endif 
-SRC += $(ENTBODY)/util.c 
-
 
 ifeq ($(DOPLOT), 1)
     SRC += $(ENTBODY)/plot.c

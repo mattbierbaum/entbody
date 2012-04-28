@@ -48,6 +48,9 @@ ARGV1_TYPE ARGV1_VAR = ARGV1_DEFAULT;
 ARGV2_TYPE ARGV2_VAR = ARGV2_DEFAULT;
 #endif
 
+#ifdef CUDA
+CUDA_DEVICE_FUNCS
+#endif
 //===================================================
 // the main function
 //===================================================
@@ -81,17 +84,17 @@ int main(int argc, char **argv){
 //==================================================================
 // the timestep - can be CPU or CUDA!
 //==================================================================
-
+CUDA_GLOBAL
 void step(float *x, float *copyx, float *v, int *type, float *rad, float *col, 
-          int *cells, int *count, int *size, int size_total, int *key,
+          unsigned int *cells, unsigned int *count, int *size, int size_total, int *key,
           long N, float L, float R, int *pbc, float dt, float Tglobal, float colfact){
 
     #ifndef CUDA
-    int i,j;
+    int i;
     #else 
     int i = blockDim.x*blockIdx.x + threadIdx.x;
     #endif
-
+    int j;
     //=========================================
     // reset the neighborlists
     int index[2];
@@ -315,8 +318,8 @@ void simulate(int seed){
         size_total *= size[i];
     }
 
-    int *count = (int*)malloc(sizeof(int)*size_total);
-    int *cells = (int*)malloc(sizeof(int)*size_total*NMAX);
+    unsigned int *count = (unsigned int*)malloc(sizeof(unsigned int)*size_total);
+    unsigned int *cells = (unsigned int*)malloc(sizeof(unsigned int)*size_total*NMAX);
     for (i=0; i<size_total; i++)
         count[i] = 0;
     for (i=0; i<size_total*NMAX; i++)
@@ -350,6 +353,7 @@ void simulate(int seed){
         step<<<256, N/256 >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
                     cu_cells, cu_count, cu_size, size_total, cu_key,
                     N, L, R, cu_pbc, dt, Tglobal, colfact);
+        ERROR_CHECK
         #endif
 
         #ifdef PLOT 
