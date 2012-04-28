@@ -34,7 +34,7 @@ ifeq ($(POINTS), 1)
     FLAGS += -DPOINTS
 endif
 
-ifeq ($(SAVETEMPS), 1)
+ifeq ($(TEMPS), 1)
     FLAGS += -save-temps
 endif
 
