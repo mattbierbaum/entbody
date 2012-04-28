@@ -3,6 +3,7 @@ NAME = rayleightaylor
 
 # change this to 1 or 0 depending if you want a pretty plot,
 # not sure what you want otherwise
+CUDA   = 0
 DOPLOT = 1
 FPS    = 1
 POINTS = 1
