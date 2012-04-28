@@ -8,7 +8,7 @@ LIBFLAGS = -lm
 # we want the compile line to be essentially
 # nvcc main.cu -arch sm_12 -DPLOT -lGL -lGLU -lglut
 ifeq ($(CUDA), 1)
-    FLAGS += -x cu -DCUDA -arch sm_12
+    FLAGS += -x cu -DCUDA -arch sm_11
     GCC = nvcc
 else
     SRC += $(HDR)

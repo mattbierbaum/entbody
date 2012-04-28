@@ -5,7 +5,7 @@
 #define pi      3.141592653589
 #define BLACK   0
 #define RED     1
-#define EPSILON DBL_EPSILON
+#define EPSILON FLT_EPSILON
 
 typedef unsigned long long int ullong;
 

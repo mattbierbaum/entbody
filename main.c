@@ -39,13 +39,13 @@ void simulate(int s);
 #ifdef ARGV1
 #define ARGV1_VAR       ARGVNAME(var,ARGV1)
 #define ARGV1_CONVERTER ARGV_CONVERTER(ARGV1_TYPE)
-ARGV1_TYPE ARGV1_VAR = ARGV1_DEFAULT;
+ARGV1_TYPE ARGV1_VAR  = ARGV1_DEFAULT;
 #endif
 
 #ifdef ARGV2
 #define ARGV2_VAR       ARGVNAME(var,ARGV2)
 #define ARGV2_CONVERTER ARGV_CONVERTER(ARGV2_TYPE)
-ARGV2_TYPE ARGV2_VAR = ARGV2_DEFAULT;
+ARGV2_TYPE ARGV2_VAR  = ARGV2_DEFAULT;
 #endif
 
 #ifdef CUDA
@@ -201,7 +201,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
 
                     //===============================================
                     // force calculation 
-                    if (dist > 1e-6 && dist < R2){
+                    if (dist > EPSILON && dist < R2){
                         FUNCTION_FORCE_PAIR
                         tcol += fx*fx + fy*fy;
                     }
@@ -281,7 +281,7 @@ void simulate(int seed){
     int *type    =   (int*)malloc(mem_size_i);
     float *rad   = (float*)malloc(mem_size_f);
     float *col   = (float*)malloc(mem_size_f);
-    for (i=0; i<N; i++){ type[i] = rad[i] = col[i] = 0;}
+    for (i=0; i<N; i++){ type[i] = 0; rad[i] = col[i] = 0.0;}
 
     float *x     = (float*)malloc(2*mem_size_f);
     float *v     = (float*)malloc(2*mem_size_f);

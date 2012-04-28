@@ -6,7 +6,7 @@ do {                                            \
     float speed= FORCE_DAMPING_SPEED;           \
     float damp = FORCE_DAMPING_COEFF;           \
     float vlen = vx*vx + vy*vy;                 \
-    if (vlen > 1e-6){                           \
+    if (vlen > 1e-6f){                          \
         fx -= damp*(vlen-speed)*vx/vlen;        \
         fy -= damp*(vlen-speed)*vy/vlen;        \
     }                                           \
