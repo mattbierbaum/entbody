@@ -6,7 +6,7 @@ NAME = rayleightaylor
 CUDA   = 0
 DOPLOT = 1
 FPS    = 1
-POINTS = 1
+POINTS = 0
 OPENMP = 0
 
 # standard compile options for the c++ executable

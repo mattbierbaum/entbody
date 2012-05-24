@@ -123,6 +123,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         #else
         int tcount = atomicInc(&count[t], 0xffffffff);
         #endif
+//        if (tcount >= NMAX || t > size[0]*size[1]) {tcount = count[t] = NMAX; }
         cells[NMAX*t + tcount] = i;
         copyx[2*i+ 0] = x[2*i+0];
         copyx[2*i+ 1] = x[2*i+1];
@@ -305,6 +306,10 @@ void simulate(int seed){
     // initialize
     FUNCTION_INIT
 
+    // make sure the initialization didn't screw up
+    for (i=0; i<2*N; i++)
+        x[2*i] = mymod(x[2*i], L);
+
     // find out what happened in initialization
     float maxr = 0.0;
     for (i=0; i<N; i++)
@@ -363,8 +368,7 @@ void simulate(int seed){
         }
         #endif
         frames++;
-
-   }
+    }
     // end of the magic, cleanup
     //----------------------------------------------
     #ifdef FPS
