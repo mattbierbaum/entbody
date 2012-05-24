@@ -118,11 +118,12 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         index[1] = (int)(x[2*i+1]/L  * size[1]);
         int t = index[0] + index[1]*size[0];
         #ifndef CUDA
+        int tcount = count[t];
         count[t] = count[t]+1;
         #else
-        atomicInc(&count[t], 0xffffffff);
+        int tcount = atomicInc(&count[t], 0xffffffff);
         #endif
-        cells[NMAX*t + count[t]] = i;
+        cells[NMAX*t + tcount] = i;
         copyx[2*i+ 0] = x[2*i+0];
         copyx[2*i+ 1] = x[2*i+1];
     #ifndef CUDA
