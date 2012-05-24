@@ -1,0 +1,14 @@
+# name of the executable and header file
+NAME = moshpits
+
+# change this to 1 or 0 depending if you want a pretty plot,
+# not sure what you want otherwise
+DOPLOT = 1
+FPS    = 1
+POINTS = 0
+OPENMP = 0
+
+# standard compile options for the c++ executable
+FULLPATH := ${PWD}/$(NAME)
+
+include ${ENTBODY}/examples/common.mk
