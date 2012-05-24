@@ -1,5 +1,5 @@
-#define CONST_PBC               {1,0}
-#define CONST_PARTICLECOUNT     512*3
+#define CONST_PBC               {1,1}
+#define CONST_PARTICLECOUNT     512*6
 #define CONST_KICKFORCE         1.0
 #define CONST_COLOR_FACTOR      1.0
 #define CONST_FRAME_SKIP        2
@@ -8,7 +8,7 @@
 #define FUNCTION_INIT           {INIT_RAYLEIGHTAYLOR; Tglobal=0.0;}
 
 #define CONST_CUTOFF_FACTOR     4.5
-#define FORCE_MORSE_EPSILON     2000.0
+#define FORCE_MORSE_EPSILON     1000.0
 #define FORCE_MORSE_ALPHA       0.10
 #define FORCE_MORSE_RELATIVE    0.7
 #define FUNCTION_FORCE_PAIR     FORCE_MORSE_2POP
@@ -21,5 +21,5 @@
         FORCE_DAMPING FORCE_GRAVITY         \
         FORCE_KICK FORCE_THERMAL            \
         if (ttype == RED && t > 10.0f)      \
-            fx -= 10.0;                     \
+            fx -= 0.0;                     \
     }

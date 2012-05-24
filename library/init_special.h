@@ -30,13 +30,14 @@ do {                                \
 do {                                                \
     long i;                                         \
     float radius  = 1.0;                            \
-    L = 1.5*sqrt(pi*radius*radius*N);               \
+    L = 2.2*sqrt(pi*radius*radius*N);               \
                                                     \
     float f = INIT_RAYLEIGHTAYLOR_FRACTION;         \
+    float rr = 4.0f;                                \
     for (i=0; i<N; i++){                            \
         rad[i] = radius;                            \
-        x[2*i+0] = L - mymod((float)2*i, L);        \
-        x[2*i+1] = L - (int)(4*i/L);                \
+        x[2*i+0] = L - mymod((float)rr*i, L);       \
+        x[2*i+1] = L - (int)(2*rr*i/L);             \
         if (x[2*i+1] < 0)  x[2*i+1] = radius;       \
         if (x[2*i+1] >= L) x[2*i+1] = L-radius;     \
                                                     \
