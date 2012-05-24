@@ -87,7 +87,7 @@ int main(int argc, char **argv){
 CUDA_GLOBAL
 void step(float *x, float *copyx, float *v, int *type, float *rad, float *col, 
           unsigned int *cells, unsigned int *count, int *size, int size_total, int *key,
-          long N, float L, float R, int *pbc, float dt, float Tglobal, float colfact){
+          long N, float L, float R, int *pbc, float dt, float t, float Tglobal, float colfact){
 
     #ifndef CUDA
     int i;
@@ -158,7 +158,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     // find forces on all particles
     #ifndef CUDA
     #ifdef OPENMP
-    #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,tn,image,k,dist)
+    #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,tn,image,dist)
     #endif
     for (i=0; i<N; i++){
     #endif
@@ -351,12 +351,12 @@ void simulate(int seed){
         memcpy(copyx, x, 2*mem_size_f);
         step(x, copyx, v, type, rad, col, 
             cells, count, size, size_total, key,
-            N, L, R, pbc, dt, Tglobal, colfact);
+            N, L, R, pbc, dt, t, Tglobal, colfact);
         #else
         cudaMemcpy(cu_key, key, mem_size_k, cudaMemcpyHostToDevice);
         step<<<blocks, N/blocks >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
                     cu_cells, cu_count, cu_size, size_total, cu_key,
-                    N, L, R, cu_pbc, dt, Tglobal, colfact);
+                    N, L, R, cu_pbc, dt, t, Tglobal, colfact);
         ERROR_CHECK
         #endif
 
