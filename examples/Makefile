@@ -1,4 +1,4 @@
-DIRS = brazilnuts polycrystals rayleightaylor sand stir
+DIRS = brazilnuts polycrystals polycrystals_morse rayleightaylor sand stir moshpits
 STUB = ${ENTBODY}/examples
 
 all: 

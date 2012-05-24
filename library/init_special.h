@@ -48,3 +48,28 @@ do {                                                \
             type[i] = RED;                          \
     }                                               \
 } while(0);
+
+
+#define INIT_CENTRAL_CIRCLE                 \
+do {                                        \
+    long i;                                 \
+    float radius = 1.0;                     \
+    L = 1.03*sqrt(pi*radius*radius*N);      \
+    for (i=0; i<N; i++){                    \
+        double tx = L*ran_ran2();           \
+        double ty = L*ran_ran2();           \
+        double tt = 2*pi*ran_ran2();        \
+                                            \
+        rad[i] = radius;                    \
+        x[2*i+0] = tx;                      \
+        x[2*i+1] = ty;                      \
+        double dd = sqrt((tx-L/2)*(tx-L/2) +\
+            (ty-L/2)*(ty-L/2));             \
+        double rad = sqrt(0.15*L*L / pi);   \
+        if (dd < rad)                       \
+            type[i] = RED;                  \
+        v[2*i+0] = 0.0f;                    \
+        v[2*i+1] = 0.0f;                    \
+    }                                       \
+} while(0);                                 \
+

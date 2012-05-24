@@ -117,16 +117,15 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         index[0] = (int)(x[2*i+0]/L  * size[0]);
         index[1] = (int)(x[2*i+1]/L  * size[1]);
         int t = index[0] + index[1]*size[0];
-        cells[NMAX*t + count[t]] = i;
-        copyx[2*i+ 0] = x[2*i+0];
-        copyx[2*i+ 1] = x[2*i+1];
-    
         #ifndef CUDA
         count[t] = count[t]+1;
         #else
         atomicInc(&count[t], 0xffffffff);
         #endif
-     #ifndef CUDA
+        cells[NMAX*t + count[t]] = i;
+        copyx[2*i+ 0] = x[2*i+0];
+        copyx[2*i+ 1] = x[2*i+1];
+    #ifndef CUDA
     }   
     #else
     __syncthreads();
@@ -144,13 +143,14 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     float px, py;
     float vx, vy;
     float fx, fy;
-    //float wx, wy;
     float ox, oy;
  
     int ttype;
     float trad;
     float tcol;
     float R2 = R*R;
+    
+    FUNCTION_OBJECTS_CREATE
 
     //==========================================
     // find forces on all particles
@@ -165,7 +165,6 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         vx = v[2*i+0];  vy = v[2*i+1]; 
 
         fx = 0.0;       fy = 0.0;
-        //wx = 0.0;       wy = 0.0;
         ox = 0.0;       oy = 0.0; 
  
         #ifdef PLOT
@@ -255,6 +254,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     #pragma omp barrier
     #endif
     #endif
+    FUNCTION_OBJECTS_FREE
 }
 
 
@@ -339,8 +339,6 @@ void simulate(int seed){
     clock_gettime(CLOCK_REALTIME, &start);
     #endif
 
-    FUNCTION_OBJECTS_CREATE
-
     const int blocks = 512;
     for (t=0.0; t<time_end; t+=dt){
         #ifndef CUDA
@@ -357,9 +355,11 @@ void simulate(int seed){
         #endif
 
         #ifdef PLOT 
+        if (frames % CONST_FRAME_SKIP == 0){
             plot_clear_screen();
             key = plot_render_particles(x, rad, type, N, L,col);
             INPUT_KEYS_QUIT
+        }
         #endif
         frames++;
 
@@ -382,7 +382,6 @@ void simulate(int seed){
     free(type);
     free(col);
 
-    FUNCTION_OBJECTS_FREE
 
     #ifdef CUDA
     CUDA_MEMORY_FREE

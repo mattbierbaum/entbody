@@ -14,6 +14,10 @@
 #define CONST_TIME_END          1e20
 #endif
 
+#ifndef CONST_FRAME_SKIP        
+#define CONST_FRAME_SKIP        1  
+#endif
+
 #ifndef CONST_CUTOFF_FACTOR 
 #define CONST_CUTOFF_FACTOR     1.0
 #endif

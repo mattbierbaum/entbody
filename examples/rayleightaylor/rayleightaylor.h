@@ -1,5 +1,5 @@
 #define CONST_PBC               {1,0}
-#define CONST_PARTICLECOUNT     512*16
+#define CONST_PARTICLECOUNT     512*64
 #define CONST_KICKFORCE         1.0
 #define CONST_COLOR_FACTOR      1.0
 

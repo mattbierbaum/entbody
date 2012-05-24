@@ -13,7 +13,7 @@
             Tglobal = 0.0;      \
         }
 
-#define KICKFORCE 2.0
+#define KICKFORCE 16.0
 #define INPUT_KEYS_WASD                     \
         if (key['w'] == 1){                 \
             if (ttype == RED)               \
