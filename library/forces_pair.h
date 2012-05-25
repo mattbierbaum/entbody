@@ -50,5 +50,13 @@ do {                                        \
     fy += co * dx[1]/l;                     \
 } while(0);    
 
-
-    
+#define FORCE_SPRING                        \
+do {                                        \
+    float k = FORCE_SPRING_CONST;           \
+    float r0 = trad+rad[tn];                \
+    float rc = CONST_CUTOFF_FACTOR/2*r0;    \
+    float l = sqrt(dist);                   \
+    float c = +k*(l-rc) * (l<2*rc);         \
+    fx += c * dx[0]/l;                      \
+    fy += c * dx[1]/l;                      \
+} while(0);

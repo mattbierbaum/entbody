@@ -114,8 +114,13 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     #ifndef CUDA
     for (i=0; i<N; i++){
     #endif
-        index[0] = (int)(x[2*i+0]/L  * size[0]);
-        index[1] = (int)(x[2*i+1]/L  * size[1]);
+        index[0] = (int)(x[2*i+0]/L  * size[0]); 
+        index[1] = (int)(x[2*i+1]/L  * size[1]); 
+        if (index[0] >= size[0]) index[0] = size[0]-1;        
+        if (index[1] >= size[1]) index[1] = size[1]-1;        
+        if (index[0] <  0)       index[0] = 0;        
+        if (index[1] <  0)       index[1] = 0;        
+         
         int t = index[0] + index[1]*size[0];
         #ifndef CUDA
         int tcount = count[t];
@@ -123,7 +128,6 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         #else
         int tcount = atomicInc(&count[t], 0xffffffff);
         #endif
-//        if (tcount >= NMAX || t > size[0]*size[1]) {tcount = count[t] = NMAX; }
         cells[NMAX*t + tcount] = i;
         copyx[2*i+ 0] = x[2*i+0];
         copyx[2*i+ 1] = x[2*i+1];
@@ -306,9 +310,18 @@ void simulate(int seed){
     // initialize
     FUNCTION_INIT
 
+    //FIXME - fixes and causes seg faults
     // make sure the initialization didn't screw up
-    for (i=0; i<2*N; i++)
-        x[2*i] = mymod(x[2*i], L);
+    /*printf("fixing\n");
+    for (i=0; i<2*N; i++){
+        if (x[2*i] <= 0+EPSILON) x[2*i] = mymod(x[2*i], L);
+        if (x[2*i] >= L-EPSILON) x[2*i] = mymod(x[2*i], L);
+    }
+    printf("fixed\n");
+    for (i=0; i<2*N; i++){
+        if (x[2*i] <= 0)printf("problem! %e\n", x[2*i]);
+        if (x[2*i] >= L)printf("problem! %e\n", x[2*i]-L);
+    }*/
 
     // find out what happened in initialization
     float maxr = 0.0;

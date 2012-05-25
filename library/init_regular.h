@@ -26,16 +26,17 @@ do {                                \
 do {                                                \
     long i;                                         \
     float radius  = 1.0;                            \
-    L = sqrt(pi*radius*radius*N);                   \
+    float f = INIT_CUBIC_LATTICE_A;                 \
+    L = f*2*radius*((int)sqrt(N));                  \
                                                     \
-    float f = INIT_RAYLEIGHTAYLOR_FRACTION;         \
+    float ep = EPSILON;                             \
+    float sz = 2*radius*f;                          \
+    int side = (int)L/sz;                           \
+                                                    \
     for (i=0; i<N; i++){                            \
         rad[i] = radius;                            \
-        x[2*i+0] = L - mymod((float)2*i, L);        \
-        x[2*i+1] = L - (int)(4*i/L);                \
-        if (x[2*i+1] < 0)  x[2*i+1] = radius;       \
-        if (x[2*i+1] >= L) x[2*i+1] = L-radius;     \
-                                                    \
+        x[2*i+0] = sz * (int)(i%side) + ep;         \
+        x[2*i+1] = sz * (int)(i/side) + ep;         \
         v[2*i+0] = 0.0;                             \
         v[2*i+1] = 0.0;                             \
                                                     \
