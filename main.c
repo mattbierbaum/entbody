@@ -162,7 +162,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     // find forces on all particles
     #ifndef CUDA
     #ifdef OPENMP
-    #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,tn,image,dist)
+    #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,tn,image,dist,px,py,vx,vy,fx,fy,ox,oy,ttype,trad,tcol)
     #endif
     for (i=0; i<N; i++){
     #endif
