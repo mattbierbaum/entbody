@@ -1,15 +1,15 @@
 #define CONST_PBC               {1,1}
-#define CONST_PARTICLECOUNT     512*16
+#define CONST_PARTICLECOUNT     512*2
 #define CONST_KICKFORCE         1.0
 #define CONST_COLOR_FACTOR      1.0
 #define CONST_FRAME_SKIP        2
 
-#define INIT_CUBIC_LATTICE_A    1.7 
+#define INIT_CUBIC_LATTICE_A    1.8 
 #define FUNCTION_INIT                           \
         INIT_CUBIC_LATTICE                      \
         for (i=0.3*N; i<0.7*N; i++) type[i] = RED;
 
-#define CONST_CUTOFF_FACTOR     5.0
+#define CONST_CUTOFF_FACTOR     4.0 /*5.5 is really strange*/
 #define FORCE_MORSE_EPSILON     2000.0
 #define FORCE_MORSE_ALPHA       0.11
 #define FORCE_MORSE_RELATIVE    0.7
