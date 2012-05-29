@@ -1,5 +1,5 @@
 # name of the executable and header file
-NAME = polycrystals_morse
+NAME = polycrystals_morse2
 
 # change this to 1 or 0 depending if you want a pretty plot,
 # not sure what you want otherwise

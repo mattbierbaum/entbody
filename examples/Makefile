@@ -1,4 +1,4 @@
-DIRS = brazilnuts polycrystals polycrystals_morse rayleightaylor sand stir moshpits springs source_sink
+DIRS = `find . -maxdepth 1 -mindepth 1 -type d` 
 STUB = ${ENTBODY}/examples
 
 all: 

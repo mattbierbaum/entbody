@@ -1,0 +1,14 @@
+#define CONST_PBC               {0,0}
+#define CONST_PARTICLECOUNT     90
+#define CONST_KICKFORCE         50.0
+
+#define INIT_RANDOM_FRACTION    1.3 
+#define FUNCTION_INIT           INIT_RANDOM 
+
+#define FORCE_HERTZ_EPSILON     100.0
+#define FUNCTION_FORCE_PAIR     FORCE_HERTZ
+
+#define FORCE_DAMPING_COEFF     1.0
+#define FORCE_DAMPING_SPEED     0.0 
+#define FUNCTION_FORCE_GLOBAL   {FORCE_DAMPING FORCE_KICK}
+
