@@ -12,4 +12,4 @@ OPENMP = 0
 # standard compile options for the c++ executable
 FULLPATH := ${PWD}/$(NAME)
 
-include ${ENTBODY}/examples/common.mk
+include ${ENTBODY}/examples/Makefile.inc
