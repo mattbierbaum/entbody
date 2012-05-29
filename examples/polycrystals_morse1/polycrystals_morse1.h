@@ -5,7 +5,7 @@
 #define CONST_COLOR_FACTOR      5.0f
 
 #define INIT_RANDOM_FRACTION    4.5f
-#define FUNCTION_INIT           {INIT_RANDOM rad[0]=2.0f;}
+#define FUNCTION_INIT           {INIT_RANDOM rad[0]=1.0f;}
 
 #define CONST_CUTOFF_FACTOR     5.5
 #define FORCE_MORSE_EPSILON     1830.0

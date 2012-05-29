@@ -1,6 +1,5 @@
 #define CONST_PBC               {1,0}
 #define CONST_PARTICLECOUNT     512*4
-
 #define CONST_KICKFORCE         20.0
 
 #define FUNCTION_INIT           INIT_BRAZILNUTS
