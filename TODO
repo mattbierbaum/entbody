@@ -1,0 +1,14 @@
+Files to fill in currently:
+    sound.c, image.c
+
+Examples to create:
+    dislocations, zombies
+
+Examples to improve:
+    sand, brazilnuts,
+
+Other ideas:
+    * be able to switch out the neighborlocator - we probably don't want to use ifdefs for this
+    * be able to use OpenCL as well... this is going to be harder
+    * make the CUDA NBL actually work
+    *   
