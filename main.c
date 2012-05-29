@@ -27,7 +27,7 @@
 #include "library/defaults.h"
 
 #ifdef PLOT
-#include "plot.h"
+#include "addons/plot.h"
 #endif
 
 #ifdef FPS

@@ -1,8 +1,5 @@
 Simple nbody code to simulate a 2D set of particles
-using a cell neighbor locator as implemented in OpenKIM.
 Has OpenGL display capabilities and is reasonably fast.
-
-CUDA version is found in the cuda folder.
 
 Options in the Makefile so that it works easily
 with other systems (edit as necessary):
@@ -14,11 +11,25 @@ with other systems (edit as necessary):
     TEMPS  - since we depend on preprocessors, output the source before gcc
 
 How to build:
-    * if you would like to use plotting, install freeglut, opengl
-        sudo apt-get install freeglut3-dev
-
     * need ENTBODY env variable set to the root directory
         export ENTBODY=`pwd`
 
     * make and run the examples (base program doesn't compile) 
-        cd examples; make
+        make
+
+Other addons:
+    * if you would like to use plotting, install freeglut, OpenGL 
+        sudo apt-get install freeglut3-dev
+
+    * image save and initial conditions come from OpenIL (DevIL)
+        sudo apt-get install libdevil-dev
+
+    * sound output comes from OpenAL
+        sudo apt-get install libopenal-dev
+
+    * multithreading is available through OpenMP
+        > already installed with gcc
+
+    * advanced computing on GPU through OpenCL
+        > install OpenCL as appropriate for your system
+

@@ -15,7 +15,7 @@ else
 endif 
 
 ifeq ($(DOPLOT), 1)
-    SRC += $(ENTBODY)/plot.c
+    SRC += $(ENTBODY)/addons/plot.c
     FLAGS += -DPLOT
     LIBFLAGS += -lGL -lGLU -lglut
 endif
