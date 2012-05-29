@@ -97,6 +97,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     int j;
     //=========================================
     // reset the neighborlists
+    #ifndef CONST_NO_NEIGHBORS
     int index[2];
     #ifndef CUDA
     for (i=0; i<size_total; i++){
@@ -136,6 +137,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     #else
     __syncthreads();
     #endif
+    #endif // matches CONST_NO_NEIGHBORS
 
     //==========================================
     // this is mainly for CUDA optimization
@@ -178,6 +180,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         INPUT_KEYS_WASD
         #endif
 
+        #ifndef CONST_NO_NEIGHBORS
         index[0] = (int)(px/L * size[0]);
         index[1] = (int)(py/L * size[1]);
 
@@ -213,6 +216,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
                  }
             }
         } } 
+        #endif
 
         //=====================================
         // global forces    
