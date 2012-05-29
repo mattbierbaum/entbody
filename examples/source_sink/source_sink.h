@@ -1,5 +1,5 @@
 #define CONST_PBC               {1,1}
-#define CONST_PARTICLECOUNT     512*256
+#define CONST_PARTICLECOUNT     512*512
 #define CONST_NO_NEIGHBORS      
 
 #define INIT_DENSE_BOX                          \
