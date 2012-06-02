@@ -14,6 +14,7 @@ void ran_seed(long j){
   vran = vran * 2685821657736338717LL;
 }
 
+// returns number between [0,1)
 float ran_ran2(){
     vran ^= vran >> 21; vran ^= vran << 35; vran ^= vran >> 4;
     ullong t = vran * 2685821657736338717LL;
