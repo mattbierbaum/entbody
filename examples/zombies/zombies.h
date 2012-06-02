@@ -1,17 +1,17 @@
 #define CONST_PBC               {1,1}
-#define CONST_PARTICLECOUNT     512*8/*512*/
-#define CONST_KICKFORCE         10.0f
-//#define CONST_TIME_END          1.0f
+#define CONST_PARTICLECOUNT     512*256
+#define CONST_CUTOFF_FACTOR     2
 #define CONST_FRAME_SKIP        10
 
-#define INIT_RANDOM_FRACTION    1.0f
-#define FUNCTION_INIT           INIT_RANDOM
+#define INIT_CUBIC_LATTICE_A    1
+#define FUNCTION_INIT           {INIT_CUBIC_LATTICE type[34] = RED;}
 
-#define CONST_COLOR_FACTOR      20.0f
-#define FORCE_HERTZ_EPSILON     150.0f
-#define FUNCTION_FORCE_PAIR     FORCE_HERTZ
+#define FUNCTION_OBJECTS_CREATE int nz = 0; int na = 0;
+#define FUNCTION_FORCE_PAIR     { if (type[j] == RED) nz++; if (type[j] == WHITE) na++; }
 
-#define FORCE_DAMPING_COEFF     1.0f
-#define FORCE_DAMPING_SPEED     0.0f
-#define FUNCTION_FORCE_GLOBAL   {FORCE_DAMPING FORCE_KICK}
-
+#define WHITE 10
+#define ZZB 0.8
+#define ZZK 0.6
+#define FUNCTION_FORCE_GLOBAL   { if (ran_ran2() < (1 - pow(1-ZZB, nz))) type[i] = RED;   \
+                                  if (ran_ran2() < (1 - pow(1-ZZK, na))) type[i] = BLACK; \
+                                }

@@ -1,5 +1,5 @@
 # name of the executable and header file
-NAME = polycrystals
+NAME = polycrystals1
 
 # change this to 1 or 0 depending if you want a pretty plot,
 # not sure what you want otherwise
