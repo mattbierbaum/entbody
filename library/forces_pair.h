@@ -1,5 +1,4 @@
 #include <math.h>
-#include "../util.h"
 
 #define FORCE_HERTZ                             \
 do {                                            \

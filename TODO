@@ -12,3 +12,22 @@ Other ideas:
     * be able to use OpenCL as well... this is going to be harder
     * make the CUDA NBL actually work
     *   
+
+Some notes:
+    Things that have to always be defined (i.e. they can be filled in for
+    any file at compile time) and are literals:
+        DIM = number of dimensions
+        
+    Things that can be included in any library definition:
+        N   : number of particles
+        L   : side length of box (deprecated soon into cell matrix)
+        pbc : periodicity on each edge
+        R   : cutoff length
+        t   : current time
+        dt  : current time step
+        x   : position array were y_i = x[DIM*i+1]
+        v   : velocity array
+        rad : radius of particles
+        col : color factor (this will be deprecated soon hopefully)
+        type: type of particle
+          

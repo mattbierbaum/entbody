@@ -1,5 +1,5 @@
 #include <math.h>
-#include "../util.h"
+#include "../core/util.h"
 
 #define INIT_RANDOM \
 do {                                \

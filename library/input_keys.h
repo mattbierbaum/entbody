@@ -1,4 +1,4 @@
-#include "../util.h"
+#include "../core/util.h"
 
 #define INPUT_KEYS_QUIT     \
         if (key['q'] == 1)  \

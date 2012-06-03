@@ -12,7 +12,9 @@
 #endif
 
 // the order here matters!
-#include "util.h"
+#include "core/util.h"
+#include "core/neighborlist.h"
+//#include "core/fields.h"
 #include "library/argv.h"
 #include "library/cuda.h"
 #include "library/init_regular.h"
