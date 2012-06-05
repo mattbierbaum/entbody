@@ -11,10 +11,14 @@
 #include <driver_types.h>
 #endif
 
+#ifdef HEADER
+#include HEADER
+#endif
+#include "library/defaults.h"
+
 // the order here matters!
 #include "core/util.h"
 #include "core/neighborlist.h"
-//#include "core/fields.h"
 #include "library/argv.h"
 #include "library/cuda.h"
 #include "library/init_regular.h"
@@ -22,11 +26,6 @@
 #include "library/forces_pair.h"
 #include "library/forces_global.h"
 #include "library/input_keys.h"
-
-#ifdef HEADER
-#include HEADER
-#endif
-#include "library/defaults.h"
 
 #ifdef PLOT
 #include "addons/plot.h"
@@ -87,67 +86,10 @@ int main(int argc, char **argv){
 // the timestep - can be CPU or CUDA!
 //==================================================================
 CUDA_GLOBAL
-void step(float *x, float *copyx, float *v, int *type, float *rad, float *col, 
-          unsigned int *cells, unsigned int *count, int *size, int size_total, int *key,
+void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_STRUCT *nsc,
           long N, float L, float R, int *pbc, float dt, float t, float Tglobal, float colfact){
 
-    #ifndef CUDA
-    int i;
-    #else 
-    int i = blockDim.x*blockIdx.x + threadIdx.x;
-    #endif
-    int j;
-    //=========================================
-    // reset the neighborlists
-    #ifndef CONST_NO_NEIGHBORS
-    int index[2];
-    #ifndef CUDA
-    for (i=0; i<size_total; i++){
-    #endif
-        if (i < size_total)
-            count[i] = 0;
-    #ifndef CUDA
-    }
-    #else
-    __syncthreads();
-    #endif
-
-    //=========================================
-    // rehash all of the particles into the list
-    #ifndef CUDA
-    for (i=0; i<N; i++){
-    #endif
-        index[0] = (int)(x[2*i+0]/L  * size[0]); 
-        index[1] = (int)(x[2*i+1]/L  * size[1]); 
-        if (index[0] >= size[0]) index[0] = size[0]-1;        
-        if (index[1] >= size[1]) index[1] = size[1]-1;        
-        if (index[0] <  0)       index[0] = 0;        
-        if (index[1] <  0)       index[1] = 0;        
-         
-        int t = index[0] + index[1]*size[0];
-        #ifndef CUDA
-        int tcount = count[t];
-        count[t] = count[t]+1;
-        #else
-        int tcount = atomicInc(&count[t], 0xffffffff);
-        #endif
-        cells[NMAX*t + tcount] = i;
-        copyx[2*i+ 0] = x[2*i+0];
-        copyx[2*i+ 1] = x[2*i+1];
-    #ifndef CUDA
-    }   
-    #else
-    __syncthreads();
-    #endif
-    #endif // matches CONST_NO_NEIGHBORS
-
-    //==========================================
-    // this is mainly for CUDA optimization
-    int tt[2];
-    int tix[2];
-    int image[2];
-    float dx[2];
-    int goodcell, ind, tn;
+    int i, j;
     float dist;
 
     float px, py;
@@ -162,14 +104,7 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
     
     FUNCTION_OBJECTS_CREATE
 
-    //==========================================
-    // find forces on all particles
-    #ifndef CUDA
-    #ifdef OPENMP
-    #pragma omp parallel for private(i,dx,index,tt,goodcell,tix,ind,j,tn,image,dist,px,py,vx,vy,fx,fy,ox,oy,ttype,trad,tcol)
-    #endif
     for (i=0; i<N; i++){
-    #endif
         tcol  = col[i]; ttype = type[i]; trad = rad[i];
         px = x[2*i+0];  py = x[2*i+1];
         vx = v[2*i+0];  vy = v[2*i+1]; 
@@ -182,43 +117,17 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         INPUT_KEYS_WASD
         #endif
 
-        #ifndef CONST_NO_NEIGHBORS
-        index[0] = (int)(px/L * size[0]);
-        index[1] = (int)(py/L * size[1]);
+        //====================================
+        // loop over neighbors
+        NBL_NEIGHBORS
+        for (j=0; j<neigh_count; j++){
+            float *dx = &rij[j*DIM];
+            unsigned int tn = neighs[j];
+            FUNCTION_FORCE_PAIR
 
-        for (tt[0]=-1; tt[0]<=1; tt[0]++){
-        for (tt[1]=-1; tt[1]<=1; tt[1]++){
-            goodcell = 1;
-            tix[0] = mod_rvec(index[0]+tt[0],size[0]-1,pbc[0],&image[0]);
-            tix[1] = mod_rvec(index[1]+tt[1],size[1]-1,pbc[1],&image[1]);
-            if (pbc[0] < image[0] || pbc[1] < image[1])  goodcell = 0;
-
-            if (goodcell){
-                ind = tix[0] + tix[1]*size[0]; 
-                for (j=0; j<count[ind]; j++){
-                    tn = cells[NMAX*ind+j];
-                    float px2 = copyx[2*tn+0];
-                    float py2 = copyx[2*tn+1];
-
-                    dist = 0.0;
-                    dx[0] = px2 - px;
-                    if (image[0]) dx[0] += L*tt[0];
-                    dist += dx[0]*dx[0];
-                    
-                    dx[1] = py2 - py;
-                    if (image[1]) dx[1] += L*tt[1];
-                    dist += dx[1]*dx[1];
-
-                    //===============================================
-                    // force calculation 
-                    if (dist > EPSILON && dist < R2){
-                        FUNCTION_FORCE_PAIR
-                        tcol += fx*fx + fy*fy;
-                    }
-                 }
-            }
-        } } 
-        #endif
+             //FIXME - this adds the first force multiple times!
+            tcol += fx*fx + fy*fy;
+        }
 
         //=====================================
         // global forces    
@@ -260,12 +169,8 @@ void step(float *x, float *copyx, float *v, int *type, float *rad, float *col,
         col[i] = tcol;  type[i] = ttype;
         x[2*i+0] = px;  x[2*i+1] = py;
         v[2*i+0] = vx;  v[2*i+1] = vy; 
-    #ifndef CUDA
     }
-    #ifdef OPENMP
-    #pragma omp barrier
-    #endif
-    #endif
+
     FUNCTION_OBJECTS_FREE
 }
 
@@ -279,7 +184,7 @@ void simulate(int seed){
     int    N      = CONST_PARTICLECOUNT;
     int pbc[]     = CONST_PBC; 
     float L       = 0.0;
-    float dt      = 1e-1;
+    float dt      = 0.1;
     float t       = 0.0;
     float Tglobal = 0.0;
 
@@ -316,39 +221,13 @@ void simulate(int seed){
     // initialize
     FUNCTION_INIT
 
-    //FIXME - fixes and causes seg faults
-    // make sure the initialization didn't screw up
-    /*printf("fixing\n");
-    for (i=0; i<2*N; i++){
-        if (x[2*i] <= 0+EPSILON) x[2*i] = mymod(x[2*i], L);
-        if (x[2*i] >= L-EPSILON) x[2*i] = mymod(x[2*i], L);
-    }
-    printf("fixed\n");
-    for (i=0; i<2*N; i++){
-        if (x[2*i] <= 0)printf("problem! %e\n", x[2*i]);
-        if (x[2*i] >= L)printf("problem! %e\n", x[2*i]-L);
-    }*/
-
     // find out what happened in initialization
     float maxr = 0.0;
     for (i=0; i<N; i++)
         if (rad[i] > maxr) maxr = rad[i];
     float R = 2*maxr*CONST_CUTOFF_FACTOR;
 
-    // make boxes for the neighborlist
-    int size[2];
-    int size_total = 1;
-    for (i=0; i<2; i++){
-        size[i] = (int)(L / R); 
-        size_total *= size[i];
-    }
-
-    unsigned int *count = (unsigned int*)malloc(sizeof(unsigned int)*size_total);
-    unsigned int *cells = (unsigned int*)malloc(sizeof(unsigned int)*size_total*NMAX);
-    for (i=0; i<size_total; i++)
-        count[i] = 0;
-    for (i=0; i<size_total*NMAX; i++)
-        cells[i] = 0;
+    NBL_BUILD
 
     //==========================================================
     // where the magic happens
@@ -367,10 +246,10 @@ void simulate(int seed){
     const int blocks = 512;
     for (t=0.0; t<time_end; t+=dt){
         #ifndef CUDA
-        memcpy(copyx, x, 2*mem_size_f);
-        step(x, copyx, v, type, rad, col, 
-            cells, count, size, size_total, key,
-            N, L, R, pbc, dt, t, Tglobal, colfact);
+        NBL_RESET
+        NBL_UPDATE
+        step(x, v, type, rad, col, key, nsc,
+             N, L, R, pbc, dt, t, Tglobal, colfact);
         #else
         cudaMemcpy(cu_key, key, mem_size_k, cudaMemcpyHostToDevice);
         step<<<blocks, N/blocks >>>(cu_x, cu_copyx, cu_v, cu_type, cu_rad, cu_col, 
@@ -396,16 +275,13 @@ void simulate(int seed){
     printf("fps = %f\n", frames/((end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec)/1e9));
     #endif
 
-    free(cells);
-    free(count);
-
-    free(copyx); 
     free(x);
     free(v);
     free(rad);
     free(type);
     free(col);
 
+    NBL_FREE
 
     #ifdef CUDA
     CUDA_MEMORY_FREE

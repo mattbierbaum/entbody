@@ -1,3 +1,7 @@
+#ifndef DIM 
+#define DIM                     2
+#endif
+
 #ifndef CONST_PBC
 #define CONST_PBC               {1,1}
 #endif
@@ -45,4 +49,28 @@
 
 #ifndef FUNCTION_OBJECTS_FREE
 #define FUNCTION_OBJECTS_FREE
+#endif
+
+#ifndef NBL_STRUCT
+#define NBL_STRUCT nbl_struct_cell
+#endif
+
+#ifndef NBL_BUILD
+#define NBL_BUILD NBL_STRUCT *nsc = nbl_cell_build(N, L, DIM, R, pbc, x);
+#endif
+
+#ifndef NBL_RESET
+#define NBL_RESET nbl_cell_reset(N, nsc);
+#endif
+
+#ifndef NBL_UPDATE
+#define NBL_UPDATE nbl_cell_update(N, L, DIM, R, pbc, x, nsc);
+#endif
+
+#ifndef NBL_NEIGHBORS
+#define NBL_NEIGHBORS int *neighs; float *rij; int neigh_count = nbl_cell_neighbors(i, &neighs, &rij, DIM, nsc);
+#endif
+
+#ifndef NBL_FREE
+#define NBL_FREE nbl_cell_free(nsc);
 #endif

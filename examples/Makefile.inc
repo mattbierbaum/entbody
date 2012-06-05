@@ -1,6 +1,6 @@
 GCC = gcc
 EXE = $(NAME) 
-SRC = $(ENTBODY)/main.c $(ENTBODY)/core/util.c 
+SRC = $(ENTBODY)/main.c $(ENTBODY)/core/util.c $(ENTBODY)/core/neighborlist.c
 HDR = $(FULLPATH).h
 FLAGS = -O3 -DHEADER=\"$(HDR)\" 
 LIBFLAGS = -lm
