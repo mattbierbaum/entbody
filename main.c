@@ -90,7 +90,6 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
           long N, float L, float R, int *pbc, float dt, float t, float Tglobal, float colfact){
 
     int i, j;
-    float dist;
 
     float px, py;
     float vx, vy;
@@ -103,8 +102,9 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
     float R2 = R*R;
     
     FUNCTION_OBJECTS_CREATE
+
     #ifdef NEIGHBOR_DEBUG
-    for (i=0; i<N; i++) col[i] = 10.0;
+    for (i=0; i<N; i++) col[i] = 0.8;
     #endif
     for (i=0; i<N; i++){
         tcol  = col[i]; ttype = type[i]; trad = rad[i];
@@ -125,8 +125,8 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
 
         for (j=0; j<neigh_count; j++){
             float *dx = &rij[j*DIM];
+            float dist = rsqij[j]; 
             unsigned int tn = neighs[j];
-            dist = dx[0]*dx[0] + dx[1]*dx[1];
             FUNCTION_FORCE_PAIR
 
             #ifdef NEIGHBOR_DEBUG
@@ -173,10 +173,13 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
             if (py < 0) {py = -py;    vy *= -restoration;}
             if (py >= L-EPSILON || py < 0){py = mymod(py, L);}
         }
- 
-        tcol = tcol/colfact; 
 
-        col[i] = tcol;  type[i] = ttype;
+        #ifndef NEIGHBOR_DEBUG 
+        tcol = tcol/colfact; 
+        col[i] = tcol;  
+        #endif
+
+        type[i] = ttype;
         x[2*i+0] = px;  x[2*i+1] = py;
         v[2*i+0] = vx;  v[2*i+1] = vy; 
     }

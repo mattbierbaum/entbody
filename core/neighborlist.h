@@ -15,11 +15,12 @@ typedef struct {
     unsigned int *countij; 
     unsigned int *nij;
     float *rij;
+    float *rsqij;
 } nbl_struct_cell;
 
 nbl_struct_cell *nbl_cell_build(int N, float L, int dim, float R, int *pbc, float *x);
 int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_struct_cell *nsc);
-int nbl_cell_neighbors(int i, int **neighs, float **rij, int dim, nbl_struct_cell *nsc);
+int nbl_cell_neighbors(int i, int **neighs, float **rij, float **rsqij, int dim, nbl_struct_cell *nsc);
 int nbl_cell_reset(int N, nbl_struct_cell *nsc);
 int nbl_cell_free(nbl_struct_cell *nsc);
 

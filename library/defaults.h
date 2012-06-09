@@ -68,7 +68,8 @@
 #endif
 
 #ifndef NBL_NEIGHBORS
-#define NBL_NEIGHBORS int *neighs; float *rij; int neigh_count = nbl_cell_neighbors(i, &neighs, &rij, DIM, nsc);
+#define NBL_NEIGHBORS int *neighs; float *rij; float *rsqij;\
+int neigh_count = nbl_cell_neighbors(i, &neighs, &rij, &rsqij, DIM, nsc);
 #endif
 
 #ifndef NBL_FREE

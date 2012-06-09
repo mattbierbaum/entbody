@@ -10,6 +10,7 @@ nbl_struct_cell *nbl_cell_build(int N, float L, int dim, float R, int *pbc, floa
 
     nbl_struct_cell *nsc = (nbl_struct_cell*)malloc(sizeof(nbl_struct_cell));
     nsc->rij     = (float*)malloc(sizeof(float)*N*dim*NMAXTOTAL);
+    nsc->rsqij   = (float*)malloc(sizeof(float)*N*NMAXTOTAL);
     nsc->nij     = (unsigned int*)malloc(sizeof(unsigned int)*N*NMAXTOTAL);
     nsc->countij = (unsigned int*)malloc(sizeof(unsigned int)*N);
     nsc->size    = (unsigned int*)malloc(sizeof(unsigned int)*dim);
@@ -31,6 +32,9 @@ nbl_struct_cell *nbl_cell_build(int N, float L, int dim, float R, int *pbc, floa
     // this means that we are not writing before we read them
     for (i=0; i<N*dim*NMAXTOTAL; i++)
         nsc->rij[i] = 0.0;
+    for (i=0; i<N*NMAXTOTAL; i++)
+        nsc->rsqij[i] = 0.0;
+
 
     return nsc;
 }
@@ -40,6 +44,7 @@ int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_st
     int index[3];
 
     float dx[3];
+    float R2 = R*R;
     int tt[3], tix[3], image[3];
     int goodcell, ind, tn;
 
@@ -80,10 +85,11 @@ int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_st
                     if (image[1]) dx[1] += L*tt[1];
 
                     double dist = dx[0]*dx[0] + dx[1]*dx[1];
-                    if (dist > EPSILON){
+                    if (dist > EPSILON && dist < R2){
                         nsc->rij[dim*NMAXTOTAL*i+dim*nsc->countij[i]+0] = dx[0];
                         nsc->rij[dim*NMAXTOTAL*i+dim*nsc->countij[i]+1] = dx[1];
                         nsc->nij[NMAXTOTAL*i+nsc->countij[i]]   = tn;
+                        nsc->rsqij[NMAXTOTAL*i+nsc->countij[i]] = dist;
                         nsc->countij[i]++;
                     }
                  }
@@ -93,9 +99,10 @@ int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_st
     return 0;
 }
 
-int nbl_cell_neighbors(int i, int **neighs, float **rij, int dim, nbl_struct_cell *nsc){
+int nbl_cell_neighbors(int i, int **neighs, float **rij, float **rsqij, int dim, nbl_struct_cell *nsc){
     *neighs = &nsc->nij[NMAXTOTAL*i];
     *rij    = &nsc->rij[dim*NMAXTOTAL*i];
+    *rsqij  = &nsc->rsqij[NMAXTOTAL*i];
     return nsc->countij[i]; 
 }
 
