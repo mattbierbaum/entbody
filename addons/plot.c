@@ -162,3 +162,17 @@ void plot_set_draw_color(float cr, float cg, float cb, float ca){
   glColor4f(cr, cg, cb, ca);
 }
 
+void plot_render_line(float L, float *p, float *v){
+    // focus on the part of scene where we draw nice
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, L, L, 0, 0, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glBegin(GL_LINES);
+    glVertex2f(p[0], p[1]);
+    glVertex2f(p[0]+v[0], p[1]+v[1]);
+    glEnd();
+    glutSwapBuffers();
+}

@@ -103,7 +103,9 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
     float R2 = R*R;
     
     FUNCTION_OBJECTS_CREATE
-
+    #ifdef NEIGHBOR_DEBUG
+    for (i=0; i<N; i++) col[i] = 10.0;
+    #endif
     for (i=0; i<N; i++){
         tcol  = col[i]; ttype = type[i]; trad = rad[i];
         px = x[2*i+0];  py = x[2*i+1];
@@ -120,13 +122,21 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
         //====================================
         // loop over neighbors
         NBL_NEIGHBORS
+
         for (j=0; j<neigh_count; j++){
             float *dx = &rij[j*DIM];
             unsigned int tn = neighs[j];
+            dist = dx[0]*dx[0] + dx[1]*dx[1];
             FUNCTION_FORCE_PAIR
 
-             //FIXME - this adds the first force multiple times!
+            #ifdef NEIGHBOR_DEBUG
+            if (ttype == RED){
+                col[tn] = 0.01;
+            }
+            #else
+            //FIXME - this adds the first force multiple times!
             tcol += fx*fx + fy*fy;
+            #endif
         }
 
         //=====================================
@@ -259,7 +269,7 @@ void simulate(int seed){
         #endif
 
         #ifdef PLOT 
-        if (frames % CONST_FRAME_SKIP == 0){
+        if (frames % CONST_FRAME_SKIP == 0 && key['h'] != 1){
             plot_clear_screen();
             key = plot_render_particles(x, rad, type, N, L,col);
             INPUT_KEYS_QUIT

@@ -27,6 +27,11 @@ nbl_struct_cell *nbl_cell_build(int N, float L, int dim, float R, int *pbc, floa
     for (i=0; i<nsc->size_total*NMAX; i++)
         nsc->cells[i] = 0;
 
+    // FIXME - if not initialized here, they are used uninitialized...
+    // this means that we are not writing before we read them
+    for (i=0; i<N*dim*NMAXTOTAL; i++)
+        nsc->rij[i] = 0.0;
+
     return nsc;
 }
 
@@ -59,8 +64,8 @@ int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_st
         for (tt[0]=-1; tt[0]<=1; tt[0]++){
         for (tt[1]=-1; tt[1]<=1; tt[1]++){
             goodcell = 1;
-            tix[0] = mod_rvec(index[0]+tt[0],nsc->size[0]-1,pbc[0],&image[0]);
-            tix[1] = mod_rvec(index[1]+tt[1],nsc->size[1]-1,pbc[1],&image[1]);
+            tix[0] = nbl_cell_mod_rvec(index[0]+tt[0],nsc->size[0]-1,pbc[0],&image[0]);
+            tix[1] = nbl_cell_mod_rvec(index[1]+tt[1],nsc->size[1]-1,pbc[1],&image[1]);
             if (pbc[0] < image[0] || pbc[1] < image[1])  goodcell = 0;
 
             if (goodcell){
@@ -76,8 +81,8 @@ int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_st
 
                     double dist = dx[0]*dx[0] + dx[1]*dx[1];
                     if (dist > EPSILON){
-                        nsc->rij[NMAXTOTAL*i+nsc->countij[i]+0] = dx[0];
-                        nsc->rij[NMAXTOTAL*i+nsc->countij[i]+1] = dx[1];
+                        nsc->rij[dim*NMAXTOTAL*i+dim*nsc->countij[i]+0] = dx[0];
+                        nsc->rij[dim*NMAXTOTAL*i+dim*nsc->countij[i]+1] = dx[1];
                         nsc->nij[NMAXTOTAL*i+nsc->countij[i]]   = tn;
                         nsc->countij[i]++;
                     }
@@ -89,8 +94,8 @@ int nbl_cell_update(int N, float L, int dim, float R, int *pbc, float *x, nbl_st
 }
 
 int nbl_cell_neighbors(int i, int **neighs, float **rij, int dim, nbl_struct_cell *nsc){
-    *neighs  = &nsc->nij[NMAXTOTAL*i];
-    *rij     = &nsc->rij[dim*NMAXTOTAL*i];
+    *neighs = &nsc->nij[NMAXTOTAL*i];
+    *rij    = &nsc->rij[dim*NMAXTOTAL*i];
     return nsc->countij[i]; 
 }
 
@@ -100,6 +105,8 @@ int nbl_cell_reset(int N, nbl_struct_cell *nsc){
         nsc->count[i] = 0;
     for (i=0; i<N; i++)
         nsc->countij[i] = 0;
+    for (i=0; i<NMAX*nsc->size_total; i++)
+        nsc->cells[i] = 0;
     return 0;
 }
 

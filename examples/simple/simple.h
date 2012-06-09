@@ -1,5 +1,5 @@
 #define CONST_PBC               {0,0}
-#define CONST_PARTICLECOUNT     90
+#define CONST_PARTICLECOUNT     20
 #define CONST_KICKFORCE         50.0
 
 #define INIT_RANDOM_FRACTION    1.3 
