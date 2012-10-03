@@ -13,22 +13,22 @@
             Tglobal = 0.0;      \
         }
 
-#define KICKFORCE 16.0
+//#define KICKFORCE 16.0
 #define INPUT_KEYS_WASD                     \
         if (key['w'] == 1){                 \
             if (ttype == RED)               \
-                oy = -KICKFORCE;            \
+                oy = -FORCE_KICK_CONST;     \
         }                                   \
         if (key['s'] == 1){                 \
             if (ttype == RED)               \
-                oy = KICKFORCE;             \
+                oy = FORCE_KICK_CONST;      \
         }                                   \
         if (key['a'] == 1){                 \
             if (ttype == RED)               \
-                ox = -KICKFORCE;            \
+                ox = -FORCE_KICK_CONST;     \
         }                                   \
         if (key['d'] == 1){                 \
             if (ttype == RED)               \
-                ox = KICKFORCE;             \
+                ox = FORCE_KICK_CONST;      \
         }                                   
  

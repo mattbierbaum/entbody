@@ -124,6 +124,8 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
         NBL_NEIGHBORS
 
         for (j=0; j<neigh_count; j++){
+            float tfx = fx;
+            float tfy = fy;
             float *dx = &rij[j*DIM];
             float dist = rsqij[j]; 
             unsigned int tn = neighs[j];
@@ -135,7 +137,7 @@ void step(float *x, float *v, int *type, float *rad, float *col, int *key, NBL_S
             }
             #else
             //FIXME - this adds the first force multiple times!
-            tcol += fx*fx + fy*fy;
+            tcol += (fx-tfx)*(fx-tfx) + (fy-tfy)*(fy-tfy);
             #endif
         }
 
@@ -222,7 +224,7 @@ void simulate(int seed){
 
     #ifdef PLOT 
         int *key;
-        plot_init(680);
+        plot_init(1000);
         plot_clear_screen();
         key = plot_render_particles(x, rad, type, N, L,col);
     #else
