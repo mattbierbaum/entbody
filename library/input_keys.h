@@ -14,6 +14,10 @@
         }
 
 //#define KICKFORCE 16.0
+#ifndef FORCE_KICK_CONST
+#define FORCE_KICK_CONST 16.0f
+#endif
+
 #define INPUT_KEYS_WASD                     \
         if (key['w'] == 1){                 \
             if (ttype == RED)               \
