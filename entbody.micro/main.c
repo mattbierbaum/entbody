@@ -80,14 +80,14 @@ void simulate(int seed){
 
     int    N       = 18*512;
     double radius  = 1.0;
-    double L       = sqrt(1.04*pi*radius*radius*N);
+    double L       = sqrt(1.02*pi*radius*radius*N);
     int    Npercell = 50;
 
     int pbc[] = {1,1};
 
     double epsilon    = 180.0;
     double damp_coeff = 0.3;
-    double kickforce  = 4.0;
+    double kickforce  = 20.0;
 
     double dt = 1e-1;
     double t  = 0.0;
@@ -279,7 +279,7 @@ void simulate(int seed){
                 printf("out of bounds\n");
           
            //col[i] += v[2*i+0]*v[2*i+0] + v[2*i+1]*v[2*i+1]; 
-           col[i] = col[i]/4; 
+           col[i] = col[i]/8; 
         }
 
         #ifdef PLOT 

@@ -156,7 +156,7 @@ int* plot_render_particles(double *x, double *rad, int *type, long N, double L, 
         plot_set_draw_color(cr,cg,cb,ca);
         glVertex2f(tx, ty);
         #else
-        double rx = rad[i];
+        double rx = 1.02*rad[i];
         uint secs = 15;
         plot_set_draw_color(cr,cg,cb,ca);
         glBegin(GL_POLYGON);
