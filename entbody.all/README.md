@@ -1,14 +1,13 @@
-Simple nbody code to simulate a 2D set of particles
-Has OpenGL display capabilities and is reasonably fast.
+This is the full version of entbody with all features included.
 
 Options in the Makefile so that it works easily
 with other systems (edit as necessary):
-    CUDA   - compile and run on CUDA device
-    DOPLOT - display with opengl
-    FPS    - calculate frames per second (not portable)
-    POINTS - make the opengl display points, not fancy circles
-    OPENMP - use threading through openmp
-    TEMPS  - since we depend on preprocessors, output the source before gcc
+- CUDA   - compile and run on CUDA device
+- DOPLOT - display with opengl
+- FPS    - calculate frames per second (not portable)
+- POINTS - make the opengl display points, not fancy circles
+- OPENMP - use threading through openmp
+- TEMPS  - since we depend on preprocessors, output the source before gcc
 
 How to build:
     * need ENTBODY env variable set to the root directory
