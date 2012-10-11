@@ -1,18 +1,34 @@
-Introduction
-------------
-Simple nbody code to simulate a 2D set of particles.
-Has OpenGL display capabilities and is reasonably fast.
+This is the full version of entbody with all features included.
 
-I've decided to keep all variations of the code in one 
-convenient place as I discover how to incorporate new features.
-The main place where these end up is eventually entbody.all.
+Options in the Makefile so that it works easily
+with other systems (edit as necessary):
+- CUDA   - compile and run on CUDA device
+- DOPLOT - display with opengl
+- FPS    - calculate frames per second (not portable)
+- POINTS - make the opengl display points, not fancy circles
+- OPENMP - use threading through openmp
+- TEMPS  - since we depend on preprocessors, output the source before gcc
 
-Variations
-----------
-The current variations are:
-* entbody.all - an attempt to include all listed below in one format
-* entbody.micro - a single file implementation (2 with plotting).  short range forces only.
+How to build:
+    * need ENTBODY env variable set to the root directory
+        export ENTBODY=`pwd`
 
-To learn about any of these variations, please read their corresponding README.md
+    * make and run the examples (base program doesn't compile) 
+        make
 
+Other addons:
+    * if you would like to use plotting, install freeglut, OpenGL 
+        sudo apt-get install freeglut3-dev
+
+    * image save and initial conditions come from OpenIL (DevIL)
+        sudo apt-get install libdevil-dev
+
+    * sound output comes from OpenAL
+        sudo apt-get install libopenal-dev
+
+    * multithreading is available through OpenMP
+        > already installed with gcc
+
+    * advanced computing on GPU through OpenCL
+        > install OpenCL as appropriate for your system
 

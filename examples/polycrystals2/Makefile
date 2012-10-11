@@ -8,7 +8,7 @@ DOPLOT = 1
 FPS    = 1
 POINTS = 0
 OPENMP = 0
-TEMPS  = 1
+TEMPS  = 0
 
 # standard compile options for the c++ executable
 FULLPATH := ${PWD}/$(NAME)
